@@ -1,16 +1,37 @@
-# React + Vite
+# EnergyFlow AI
+> Smart Energy Analytics & In-Browser AI Insights Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application designed to track electricity consumption, compute daily/monthly metrics, calculate financial/environmental impact, and generate rule-based AI optimization insights.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Live Demo
+- **Deployed App**:(https://energyflow-ai.vercel.app/)
+- **GitHub Repository**: https://github.com/Asif96-ai/energyflow-ai
 
-## React Compiler
+## Features
+* **Interactive Dashboard**: Visualizes daily electricity consumption trends using interactive charts.
+* **Custom CSV Upload**: Parses dynamic user-uploaded energy consumption files (`date,consumption_kwh`).
+* **Rule-Based AI Engine**: Analyzes time-series data locally to identify usage spurts, high-consumption alerts, and cost optimization opportunities.
+* **Financial & Environmental Metrics**: Auto-calculates total kWh usage, estimated cost (€), daily average, and CO₂ footprint.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+## Tech Stack
+* **Frontend**: React, Vite
+* **Data Visualization**: Recharts
+* **UI Components**: Lucide React
+* **Engine**: Custom JavaScript Rule-Based Heuristic Engine
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Local Development
+```bash
+# Clone the repository
+git clone [https://github.com/Asif96-ai/energyflow-ai.git](https://github.com/Asif96-ai/energyflow-ai.git)
+
+# Navigate to directory
+cd energyflow-ai
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
