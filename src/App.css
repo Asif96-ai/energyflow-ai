@@ -2,144 +2,497 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: #f4f7f9;
-  color: #17202a;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f4f6f8;
+  color: #0f172a;
+  overflow-x: hidden;
+  width: 100%;
 }
 
-.dashboard {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 32px;
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
-.dashboard-header {
+/* Dark Navy Sidebar */
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  flex-shrink: 0;
+  background: #13182e;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  color: #94a3b8;
+  border-right: 1px solid #1e293b;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 28px;
+  padding: 0 12px;
+  font-weight: 700;
+  font-size: 18px;
+  color: #ffffff;
 }
 
-.dashboard-header h1 {
-  margin: 0;
-  font-size: 32px;
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
 }
 
-.dashboard-header p {
-  margin-top: 8px;
-  color: #667085;
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  margin-bottom: 24px;
+.nav-item.active {
+  background: #222947;
+  color: #00e676;
 }
 
-.stat-card {
-  background: white;
+.nav-item:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+/* Premium Banner Card in Sidebar */
+.premium-card {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border: 1px solid #4338ca;
+  padding: 16px;
   border-radius: 14px;
-  padding: 22px;
+  text-align: center;
+  color: #ffffff;
+  margin-top: 16px;
+}
+
+.premium-card button {
+  background: #00c853;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 12px;
+  width: 100%;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.premium-card button:hover {
+  opacity: 0.9;
+}
+
+.sidebar-footer {
+  padding: 12px 0 0;
+}
+
+.sidebar-btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Dashboard Main Layout */
+.main-container {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Header & Top Right Section */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-right-tools {
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
-.stat-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
+.clock-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.user-profile-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1e293b;
+  color: #00e676;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef6ff;
-}
-
-.stat-card p {
-  margin: 0 0 6px;
-  color: #667085;
+  font-weight: 700;
   font-size: 14px;
+  border: 2px solid #00c853;
 }
 
-.stat-card h2 {
-  margin: 0;
-  font-size: 22px;
-}
-
-.content-card {
-  background: white;
-  border-radius: 14px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-}
-
-.card-header h2 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.card-header p {
-  margin: 6px 0 0;
-  color: #667085;
-}
-
-.chart-container {
-  width: 100%;
-  height: 360px;
-  margin-top: 25px;
-}
-
-.ai-card {
-  margin-bottom: 0;
-}
-
-.insights {
+/* Dashboard Grid Layout */
+.dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-top: 24px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+  width: 100%;
 }
 
-.insight {
-  border: 1px solid #e5e7eb;
+.main-column, .side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Card General Styling */
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  min-width: 0;
+}
+
+/* Temperature Cards */
+.temp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.temp-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Device Management Grid */
+.devices-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.btn-add-appliance {
+  background: #00c853;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.btn-add-appliance:hover {
+  background: #00a843;
+}
+
+.add-device-form {
+  display: flex;
+  gap: 10px;
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.add-device-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.add-device-form button {
+  background: #1e293b;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.devices-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Fully Aligned Appliance Cards */
+.device-card {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
   border-radius: 12px;
-  padding: 18px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  min-width: 0;
 }
 
-.insight strong {
-  display: block;
-  margin-bottom: 8px;
+.device-card.active {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: #1e293b;
+  box-shadow: 0 4px 10px rgba(30, 41, 59, 0.15);
 }
 
-.insight p {
+.device-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.device-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.device-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.device-card.active .device-status-badge {
+  color: #00e676;
+}
+
+.device-card:not(.active) .device-status-badge {
+  color: #64748b;
+}
+
+.device-title {
   margin: 0;
-  color: #667085;
-  line-height: 1.6;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-@media (max-width: 900px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Wattage Pill Badge Inside Box */
+.device-watt-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
 
-  .insights {
-    grid-template-columns: 1fr;
+.device-card.active .device-watt-badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: #00e676;
+}
+
+.device-card:not(.active) .device-watt-badge {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
+
+/* Interactive CSV Card & Button Styling */
+.interactive-csv-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+.csv-upload-btn-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1e293b;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.2s ease;
+  text-align: center;
+}
+
+.csv-upload-btn-large:hover {
+  background: #334155;
+}
+
+/* SMS Toggle Switch Box */
+.sms-alert-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.switch-toggle {
+  width: 44px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.switch-toggle.active {
+  background: #00c853;
+}
+
+.switch-circle {
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+}
+
+.switch-toggle.active .switch-circle {
+  transform: translateX(20px);
+}
+
+/* AI Insights Full Width Bottom Grid */
+.bottom-insights-container {
+  width: 100%;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.insight-card {
+  background: #f8fafc;
+  border-left: 4px solid #00c853;
+  border-radius: 10px;
+  padding: 16px;
+  border-top: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  min-width: 0;
+}
+
+@media (max-width: 1200px) {
+  .devices-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 600px) {
-  .dashboard {
-    padding: 18px;
-  }
-
-  .stats-grid {
+@media (max-width: 1024px) {
+  .dashboard-grid {
     grid-template-columns: 1fr;
   }
-
-  .dashboard-header h1 {
-    font-size: 26px;
+  .insights-grid {
+    grid-template-columns: 1fr;
   }
 }

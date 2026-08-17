@@ -1,42 +1,46 @@
-export function generateLocalInsights(data) {
-  if (!data || data.length < 2) return [];
-
+export function generateAdvancedInsights(stats, activePower, solarGen) {
   const insights = [];
-  const total = data.reduce((sum, item) => sum + item.consumption, 0);
-  const avg = total / data.length;
 
-  // Rule 1: Week-over-Week Trend Analysis
-  if (data.length >= 14) {
-    const last7Avg = data.slice(-7).reduce((sum, i) => sum + i.consumption, 0) / 7;
-    const prev7Avg = data.slice(-14, -7).reduce((sum, i) => sum + i.consumption, 0) / 7;
-    const pctChange = ((last7Avg - prev7Avg) / prev7Avg) * 100;
+  // 1. Power Factor Optimization Rule
+  const reactivePower = Math.sqrt(Math.max(0, Math.pow(activePower * 1.25, 2) - Math.pow(activePower, 2)));
+  const apparentPower = Math.sqrt(Math.pow(activePower, 2) + Math.pow(reactivePower, 2));
+  const powerFactor = apparentPower > 0 ? (activePower / apparentPower).toFixed(2) : 1.0;
 
-    if (pctChange > 15) {
-      insights.push({
-        title: "Consumption Trend (+15% Spurt)",
-        description: `Weekly consumption spiked by ${pctChange.toFixed(1)}% (${last7Avg.toFixed(1)} kWh/day vs ${prev7Avg.toFixed(1)} kWh/day previously). Consider shifting flexible loads to off-peak hours.`,
-      });
-    } else if (pctChange < -10) {
-      insights.push({
-        title: "Efficiency Gains",
-        description: `Great job! Your energy usage dropped by ${Math.abs(pctChange).toFixed(1)}% compared to the prior week.`,
-      });
-    }
-  }
-
-  // Rule 2: High Single-Day Peak Alert
-  const maxItem = data.reduce((max, item) => (item.consumption > max.consumption ? item : max), data[0]);
-  if (maxItem.consumption > avg * 1.2) {
+  if (powerFactor < 0.85) {
     insights.push({
-      title: "Peak Consumption Alert",
-      description: `High peak usage detected on ${maxItem.date} (${maxItem.consumption} kWh). This is over 20% above your average daily usage of ${avg.toFixed(1)} kWh.`,
+      title: "Low Power Factor Alert (PF: " + powerFactor + ")",
+      category: "Power Quality",
+      description: "High inductive load detected causing phase displacement. Installing capacitor banks can reduce reactive penalties.",
+      badge: "Warning"
     });
   }
 
-  // Rule 3: Optimization Opportunity
+  // 2. Solar PV Self-Consumption & Grid Export Rule
+  if (solarGen > activePower) {
+    const surplus = (solarGen - activePower).toFixed(0);
+    insights.push({
+      title: "Solar Grid Export Active (+" + surplus + " W)",
+      category: "Renewable Generation",
+      description: "Solar production exceeds household demand. Surplus power is being fed back to the grid or charging local storage.",
+      badge: "Success"
+    });
+  } else if (solarGen > 0) {
+    const coverage = ((solarGen / activePower) * 100).toFixed(0);
+    insights.push({
+      title: "Solar Offset Ratio (" + coverage + "% Covered)",
+      category: "Renewable Generation",
+      description: "Solar PV is actively covering " + coverage + "% of real-time load. Grid energy compensates for the rest.",
+      badge: "Info"
+    });
+  }
+
+  // 3. Peak Demand Detection Rule
+  const maxDay = stats.reduce((max, item) => (item.consumption > max.consumption ? item : max), stats[0] || { day: "0", consumption: 0 });
   insights.push({
-    title: "Optimization Opportunity",
-    description: `Your average daily load is ${avg.toFixed(1)} kWh. Automating high-power appliances during mid-day or off-peak periods can reduce estimated bill charges.`,
+    title: "Peak Daily Load Spike (" + maxDay.consumption + " kWh)",
+    category: "Demand Management",
+    description: "Peak consumption recorded on Day " + maxDay.day + ". Automated load shedding is recommended during high-tariff windows.",
+    badge: "Alert"
   });
 
   return insights;
