@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { calculateEnergySystem } from "../utils/energySystem";
+import { generateAdvancedInsights } from "../utils/aiEngine";
 import { 
   Zap, Lightbulb, Wifi, Tv, ShieldCheck, BatteryCharging,
   LayoutDashboard, CreditCard, Clock, PiggyBank, Settings, Sparkles, ArrowUpRight, ArrowDownLeft,
@@ -74,12 +76,51 @@ function Dashboard() {
   };
 
   // Electrical parameter calculations
-  const activePower = devices.filter(d => d.active).reduce((sum, d) => sum + d.power, 0);
-  const voltage = 230; // AC Mains Voltage
-  const powerFactor = activePower > 0 ? 0.94 : 1.0; 
-  const totalCurrent = activePower > 0 ? (activePower / (voltage * powerFactor)).toFixed(2) : "0.00";
-  const solarGen = 1200;
-  const batterySoC = 82;
+   // =========================================================
+  // ENERGY SYSTEM ENGINE
+  // =========================================================
+
+  // Simulated solar generation in kW.
+  // We keep this value in kW for the engineering engine.
+  const solarGenerationKW = 1.2;
+
+  // Simulated battery state of charge.
+  const batteryStateOfCharge = 82;
+
+  // Electrical system parameters.
+  const voltage = 230;
+const powerFactor = 0.94;
+
+  // Run the local EnergyFlow engineering engine.
+  const energySystem = calculateEnergySystem({
+    devices,
+    solarGeneration: solarGenerationKW,
+    batterySoC: batteryStateOfCharge,
+    batteryCapacity: 20,
+    voltage,
+    powerFactor,
+    batteryMaxPower: 5,
+    electricityPrice: 0.32,
+  });
+
+  // =========================================================
+  // COMPATIBILITY VALUES
+  // =========================================================
+
+  const activePower = energySystem.totalLoadWatts;
+
+  const solarGen = energySystem.solarKW * 1000;
+
+  const batterySoC = energySystem.batterySoC;
+
+  const totalCurrent = energySystem.currentAmps.toFixed(2);
+
+  // =========================================================
+  // LOCAL AI ENGINE
+  // =========================================================
+
+  const advancedAIInsights =
+    generateAdvancedInsights(energySystem);
 
   // Dynamic AI Insight Generator
   const getDynamicInsights = () => {
