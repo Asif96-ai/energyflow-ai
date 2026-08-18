@@ -2,17 +2,14 @@
  * EnergyFlow AI
  * Local Engineering Intelligence Engine
  *
- * This module does NOT require an API key.
- * It analyzes the energy system locally using
- * engineering rules, thresholds and calculations.
+ * 100% client-side.
+ * No API key required.
  */
 
-export function generateAdvancedInsights(system) {
-  const insights = [];
+export function generateAdvancedInsights(system, devices = []) {
+  if (!system) return [];
 
-  if (!system) {
-    return insights;
-  }
+  const insights = [];
 
   const {
     totalLoadKW,
@@ -21,41 +18,43 @@ export function generateAdvancedInsights(system) {
     solarSurplusKW,
     solarDeficitKW,
     batterySoC,
+    batteryPowerKW,
     gridImportKW,
     gridExportKW,
     currentAmps,
     powerFactor,
     renewableUtilization,
     estimatedHourlyCost,
-    systemStatus,
+    estimatedHourlyCO2,
   } = system;
 
-  // =========================================================
-  // 1. HIGH GRID DEPENDENCY
-  // =========================================================
+  // ---------------------------------------------------------
+  // GRID DEPENDENCY
+  // ---------------------------------------------------------
 
   if (
     gridImportKW > 0 &&
-    gridImportKW > totalLoadKW * 0.7
+    totalLoadKW > 0 &&
+    gridImportKW / totalLoadKW > 0.7
   ) {
     insights.push({
       category: "Grid Dependency",
-      title: "High Grid Dependency Detected",
+      title: "High Grid Dependency",
       description:
         `The system is importing ${gridImportKW.toFixed(
           2
-        )} kW from the grid while total demand is ${totalLoadKW.toFixed(
+        )} kW while demand is ${totalLoadKW.toFixed(
           2
-        )} kW. Consider shifting flexible loads toward periods of higher solar generation.`,
-      severity: "warning",
+        )} kW. Flexible loads should be shifted toward periods of higher renewable generation.`,
       recommendation:
-        "Shift EV charging, heating or other flexible loads to the solar production window.",
+        "Shift flexible loads such as EV charging, heating or appliances toward solar-production periods.",
+      severity: "warning",
     });
   }
 
-  // =========================================================
-  // 2. SOLAR SURPLUS
-  // =========================================================
+  // ---------------------------------------------------------
+  // SOLAR SURPLUS
+  // ---------------------------------------------------------
 
   if (solarSurplusKW > 0.2) {
     insights.push({
@@ -64,152 +63,203 @@ export function generateAdvancedInsights(system) {
       description:
         `Solar generation exceeds current demand by ${solarSurplusKW.toFixed(
           2
-        )} kW. This energy can potentially be stored in the battery or used by flexible loads.`,
-      severity: "success",
+        )} kW.`,
       recommendation:
-        "Charge the battery or activate flexible loads before exporting excess energy.",
+        "Use the surplus to charge the battery or activate flexible loads before exporting to the grid.",
+      severity: "success",
     });
   }
 
-  // =========================================================
-  // 3. LOW BATTERY
-  // =========================================================
+  // ---------------------------------------------------------
+  // SOLAR DEFICIT
+  // ---------------------------------------------------------
+
+  if (solarDeficitKW > 0.2) {
+    insights.push({
+      category: "Solar Generation",
+      title: "Solar Generation Below Demand",
+      description:
+        `Current demand exceeds solar generation by ${solarDeficitKW.toFixed(
+          2
+        )} kW.`,
+      recommendation:
+        "Use stored battery energy or shift non-critical loads to reduce grid dependency.",
+      severity: "info",
+    });
+  }
+
+  // ---------------------------------------------------------
+  // BATTERY
+  // ---------------------------------------------------------
 
   if (batterySoC < 20) {
     insights.push({
       category: "Battery",
       title: "Battery State of Charge Is Low",
       description:
-        `Battery state of charge is currently ${batterySoC.toFixed(
-          0
-        )}%. The system has limited stored energy available for peak-demand support.`,
-      severity: "warning",
+        `Battery state of charge is ${batterySoC.toFixed(0)}%.`,
       recommendation:
-        "Prioritize battery charging during periods of solar surplus.",
+        "Prioritize battery charging during the next solar-surplus period.",
+      severity: "warning",
     });
   }
 
-  // =========================================================
-  // 4. HIGH BATTERY
-  // =========================================================
-
-  if (batterySoC > 90 && solarSurplusKW > 0) {
+  if (batterySoC > 90 && solarSurplusKW > 0.2) {
     insights.push({
       category: "Battery",
       title: "Battery Near Full Capacity",
       description:
-        `Battery state of charge is ${batterySoC.toFixed(
+        `Battery is at ${batterySoC.toFixed(
           0
         )}% while solar generation is producing surplus energy.`,
-      severity: "info",
       recommendation:
-        "Consider increasing flexible consumption or exporting excess solar energy.",
+        "Increase flexible consumption or export excess renewable energy.",
+      severity: "info",
     });
   }
 
-  // =========================================================
-  // 5. SOLAR PERFORMANCE
-  // =========================================================
+  // ---------------------------------------------------------
+  // RENEWABLE COVERAGE
+  // ---------------------------------------------------------
 
-  if (solarKW > 0 && solarCoverage >= 50) {
+  if (solarCoverage >= 70) {
     insights.push({
-      category: "Solar Performance",
+      category: "Renewable Energy",
       title: "Strong Solar Load Coverage",
       description:
         `Solar generation currently covers approximately ${solarCoverage.toFixed(
           0
-        )}% of the active electrical load.`,
-      severity: "success",
+        )}% of active demand.`,
       recommendation:
-        "Prioritize flexible loads during the current solar production period.",
+        "Run flexible loads while renewable generation is available.",
+      severity: "success",
     });
   }
 
-  // =========================================================
-  // 6. POWER FACTOR
-  // =========================================================
+  // ---------------------------------------------------------
+  // POWER QUALITY
+  // ---------------------------------------------------------
 
   if (powerFactor < 0.85) {
     insights.push({
       category: "Power Quality",
-      title: "Low Power Factor Detected",
+      title: "Low Power Factor",
       description:
-        `The estimated power factor is ${powerFactor.toFixed(
-          2
-        )}. Low power factor indicates increased reactive power demand.`,
-      severity: "warning",
+        `Estimated power factor is ${powerFactor.toFixed(2)}.`,
       recommendation:
-        "Investigate inductive loads and consider appropriate reactive power compensation.",
+        "Investigate inductive loads and consider appropriate reactive-power compensation.",
+      severity: "warning",
     });
   }
 
-  // =========================================================
-  // 7. CURRENT LOADING
-  // =========================================================
+  // ---------------------------------------------------------
+  // CURRENT
+  // ---------------------------------------------------------
 
   if (currentAmps > 20) {
     insights.push({
       category: "Electrical Loading",
       title: "Elevated Current Demand",
       description:
-        `Current demand is approximately ${currentAmps.toFixed(
-          2
-        )} A at the simulated supply voltage.`,
-      severity: "warning",
+        `Estimated current is ${currentAmps.toFixed(2)} A.`,
       recommendation:
-        "Review simultaneous operation of high-power loads during peak demand periods.",
+        "Review simultaneous operation of high-power loads.",
+      severity: "warning",
     });
   }
 
-  // =========================================================
-  // 8. GRID EXPORT
-  // =========================================================
+  // ---------------------------------------------------------
+  // GRID EXPORT
+  // ---------------------------------------------------------
 
   if (gridExportKW > 0.2) {
     insights.push({
       category: "Grid Export",
-      title: "Energy Export Available",
+      title: "Renewable Energy Export",
       description:
-        `The microgrid is currently exporting approximately ${gridExportKW.toFixed(
+        `Approximately ${gridExportKW.toFixed(
           2
-        )} kW.`,
-      severity: "success",
+        )} kW is currently available for grid export.`,
       recommendation:
-        "Consider storing surplus energy or scheduling flexible loads before exporting.",
+        "Consider storing or consuming the surplus before exporting it.",
+      severity: "success",
     });
   }
 
-  // =========================================================
-  // 9. COST
-  // =========================================================
+  // ---------------------------------------------------------
+  // COST
+  // ---------------------------------------------------------
 
-  if (estimatedHourlyCost > 1) {
+  if (estimatedHourlyCost > 0.5) {
     insights.push({
       category: "Energy Cost",
-      title: "High Estimated Grid Cost",
+      title: "Grid Energy Cost Opportunity",
       description:
         `Current grid import corresponds to approximately €${estimatedHourlyCost.toFixed(
           2
-        )} per hour at the configured electricity price.`,
-      severity: "warning",
+        )} per hour.`,
       recommendation:
-        "Reduce grid-dependent loads or shift flexible consumption toward renewable generation periods.",
+        "Reduce or shift flexible loads to renewable-generation periods.",
+      severity: "warning",
     });
   }
 
-  // =========================================================
-  // 10. GENERAL SYSTEM STATUS
-  // =========================================================
+  // ---------------------------------------------------------
+  // CO2
+  // ---------------------------------------------------------
+
+  if (estimatedHourlyCO2 > 1) {
+    insights.push({
+      category: "Carbon",
+      title: "Grid Carbon Exposure",
+      description:
+        `Current grid demand corresponds to approximately ${estimatedHourlyCO2.toFixed(
+          2
+        )} kg CO₂/hour using the simulation emission factor.`,
+      recommendation:
+        "Increase renewable self-consumption and reduce grid imports.",
+      severity: "info",
+    });
+  }
+
+  // ---------------------------------------------------------
+  // DEVICE-SPECIFIC INTELLIGENCE
+  // ---------------------------------------------------------
+
+  const heavyDevices = devices.filter(
+    (device) =>
+      device.active && Number(device.power) >= 1000
+  );
+
+  if (heavyDevices.length > 0) {
+    const names = heavyDevices
+      .map((device) => device.name)
+      .join(", ");
+
+    insights.push({
+      category: "Load Management",
+      title: "High-Power Loads Active",
+      description:
+        `${names} ${heavyDevices.length === 1 ? "is" : "are"} currently contributing significant demand.`,
+      recommendation:
+        "Schedule high-power loads when solar generation is highest where possible.",
+      severity: "info",
+    });
+  }
+
+  // ---------------------------------------------------------
+  // FALLBACK
+  // ---------------------------------------------------------
 
   if (insights.length === 0) {
     insights.push({
       category: "System Health",
       title: "Energy System Operating Normally",
       description:
-        "No major energy optimization conditions were detected in the current simulation state.",
-      severity: "success",
+        "No major optimization opportunity was detected in the current operating state.",
       recommendation:
-        "Continue monitoring solar generation, battery state of charge and grid demand.",
+        "Continue monitoring renewable generation, battery state and grid demand.",
+      severity: "success",
     });
   }
 

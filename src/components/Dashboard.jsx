@@ -1,64 +1,181 @@
-import React, { useState, useEffect } from "react";
-import { calculateEnergySystem } from "../utils/energySystem";
-import { generateAdvancedInsights } from "../utils/aiEngine";
-import { 
-  Zap, Lightbulb, Wifi, Tv, ShieldCheck, BatteryCharging,
-  LayoutDashboard, CreditCard, Clock, PiggyBank, Settings, Sparkles, ArrowUpRight, ArrowDownLeft,
-  Upload, LogOut, User, Flame, Thermometer, MessageSquare, Plus, Trash2
-} from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
+  Zap,
+  Lightbulb,
+  Wifi,
+  Tv,
+  ShieldCheck,
+  BatteryCharging,
+  LayoutDashboard,
+  CreditCard,
+  Clock,
+  PiggyBank,
+  Settings,
+  Sparkles,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Upload,
+  LogOut,
+  User,
+  Flame,
+  Thermometer,
+  MessageSquare,
+  Plus,
+  Trash2,
+  Bot,
+  Sun,
+  Gauge,
+  Euro,
+  Leaf,
+  Play,
+  RotateCcw,
+} from "lucide-react";
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LineChart,
+  Line,
 } from "recharts";
 
+import { calculateEnergySystem } from "../utils/energySystem";
+import { generateAdvancedInsights } from "../utils/aiEngine";
+
 const initialStats = [
-  { day: "12", consumption: 15 }, { day: "13", consumption: 22 },
-  { day: "14", consumption: 18 }, { day: "15", consumption: 35 },
-  { day: "16", consumption: 28 }, { day: "17", consumption: 24 },
-  { day: "18", consumption: 30 }, { day: "19", consumption: 19 },
-  { day: "20", consumption: 26 }, { day: "21", consumption: 32 }
+  { day: "12", consumption: 15 },
+  { day: "13", consumption: 22 },
+  { day: "14", consumption: 18 },
+  { day: "15", consumption: 35 },
+  { day: "16", consumption: 28 },
+  { day: "17", consumption: 24 },
+  { day: "18", consumption: 30 },
+  { day: "19", consumption: 19 },
+  { day: "20", consumption: 26 },
+  { day: "21", consumption: 32 },
 ];
 
 function Dashboard() {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [fileName, setFileName] = useState("No file chosen");
+  const [currentTime, setCurrentTime] = useState(
+    new Date()
+  );
+
+  const [fileName, setFileName] =
+    useState("No file chosen");
+
   const [smsAlerts, setSmsAlerts] = useState(true);
 
-  // Temperature State
   const [insideTemp] = useState(21.5);
   const [outsideTemp] = useState(11.0);
 
-  // Dynamic Devices State (Add/Remove Appliances)
   const [devices, setDevices] = useState([
-    { id: "heating", name: "Heat Pump HVAC", power: 1800, active: true, icon: Flame },
-    { id: "light", name: "Smart Lighting", power: 180, active: true, icon: Lightbulb },
-    { id: "internet", name: "WiFi Router", power: 45, active: true, icon: Wifi },
-    { id: "tv", name: "Entertainment Unit", power: 210, active: false, icon: Tv },
+    {
+      id: "heating",
+      name: "Heat Pump HVAC",
+      power: 1800,
+      active: true,
+      icon: Flame,
+    },
+    {
+      id: "light",
+      name: "Smart Lighting",
+      power: 180,
+      active: true,
+      icon: Lightbulb,
+    },
+    {
+      id: "internet",
+      name: "WiFi Router",
+      power: 45,
+      active: true,
+      icon: Wifi,
+    },
+    {
+      id: "tv",
+      name: "Entertainment Unit",
+      power: 210,
+      active: false,
+      icon: Tv,
+    },
   ]);
 
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newDeviceName, setNewDeviceName] = useState("");
-  const [newDevicePower, setNewDevicePower] = useState("");
+  const [showAddForm, setShowAddForm] =
+    useState(false);
+
+  const [newDeviceName, setNewDeviceName] =
+    useState("");
+
+  const [newDevicePower, setNewDevicePower] =
+    useState("");
+
+  const [solarGenerationKW, setSolarGenerationKW] =
+    useState(1.2);
+
+  const [batteryStateOfCharge, setBatteryStateOfCharge] =
+    useState(82);
+
+  const [aiQuestion, setAIQuestion] =
+    useState("");
+
+  const [aiAnswer, setAIAnswer] =
+    useState("");
+
+  const [simulationBattery, setSimulationBattery] =
+    useState(20);
+
+  const [simulationSolar, setSimulationSolar] =
+    useState(1.2);
+
+  const [simulationResult, setSimulationResult] =
+    useState(null);
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(
+      () => setCurrentTime(new Date()),
+      1000
+    );
+
     return () => clearInterval(timer);
   }, []);
 
   const toggleDevice = (id) => {
-    setDevices(devices.map(d => d.id === id ? { ...d, active: !d.active } : d));
+    setDevices((currentDevices) =>
+      currentDevices.map((device) =>
+        device.id === id
+          ? {
+              ...device,
+              active: !device.active,
+            }
+          : device
+      )
+    );
   };
 
   const addDevice = (e) => {
     e.preventDefault();
-    if (!newDeviceName || !newDevicePower) return;
+
+    if (!newDeviceName || !newDevicePower) {
+      return;
+    }
+
     const newDevice = {
       id: Date.now().toString(),
       name: newDeviceName,
-      power: parseFloat(newDevicePower),
+      power: Number(newDevicePower),
       active: true,
-      icon: Zap
+      icon: Zap,
     };
-    setDevices([...devices, newDevice]);
+
+    setDevices((currentDevices) => [
+      ...currentDevices,
+      newDevice,
+    ]);
+
     setNewDeviceName("");
     setNewDevicePower("");
     setShowAddForm(false);
@@ -66,7 +183,12 @@ function Dashboard() {
 
   const removeDevice = (id, e) => {
     e.stopPropagation();
-    setDevices(devices.filter(d => d.id !== id));
+
+    setDevices((currentDevices) =>
+      currentDevices.filter(
+        (device) => device.id !== id
+      )
+    );
   };
 
   const handleFileUpload = (e) => {
@@ -75,150 +197,392 @@ function Dashboard() {
     }
   };
 
-  // Electrical parameter calculations
-   // =========================================================
-  // ENERGY SYSTEM ENGINE
-  // =========================================================
+  /*
+   * ---------------------------------------------------------
+   * CENTRAL ENERGY MODEL
+   * ---------------------------------------------------------
+   */
 
-  // Simulated solar generation in kW.
-  // We keep this value in kW for the engineering engine.
-  const solarGenerationKW = 1.2;
+  const energySystem = useMemo(
+    () =>
+      calculateEnergySystem({
+        devices,
+        solarGeneration: solarGenerationKW,
+        batterySoC: batteryStateOfCharge,
+        batteryCapacity: 20,
+        voltage: 230,
+        powerFactor: 0.94,
+        batteryMaxPower: 5,
+        electricityPrice: 0.32,
+      }),
+    [
+      devices,
+      solarGenerationKW,
+      batteryStateOfCharge,
+    ]
+  );
 
-  // Simulated battery state of charge.
-  const batteryStateOfCharge = 82;
+  /*
+   * ---------------------------------------------------------
+   * LOCAL AI ENGINE
+   * ---------------------------------------------------------
+   */
 
-  // Electrical system parameters.
-  const voltage = 230;
-const powerFactor = 0.94;
+  const aiInsights = useMemo(
+    () =>
+      generateAdvancedInsights(
+        energySystem,
+        devices
+      ),
+    [energySystem, devices]
+  );
 
-  // Run the local EnergyFlow engineering engine.
-  const energySystem = calculateEnergySystem({
-    devices,
-    solarGeneration: solarGenerationKW,
-    batterySoC: batteryStateOfCharge,
-    batteryCapacity: 20,
-    voltage,
-    powerFactor,
-    batteryMaxPower: 5,
-    electricityPrice: 0.32,
-  });
+  /*
+   * ---------------------------------------------------------
+   * LOCAL AI COPILOT
+   * ---------------------------------------------------------
+   */
 
-  // =========================================================
-  // COMPATIBILITY VALUES
-  // =========================================================
+  const answerAIQuestion = () => {
+    const question =
+      aiQuestion.trim().toLowerCase();
 
-  const activePower = energySystem.totalLoadWatts;
+    if (!question) return;
 
-  const solarGen = energySystem.solarKW * 1000;
+    const {
+      totalLoadKW,
+      solarKW,
+      batterySoC,
+      gridImportKW,
+      gridExportKW,
+      solarSurplusKW,
+      solarDeficitKW,
+      currentAmps,
+      powerFactor,
+      estimatedHourlyCost,
+    } = energySystem;
 
-  const batterySoC = energySystem.batterySoC;
+    if (
+      question.includes("grid") &&
+      question.includes("import")
+    ) {
+      setAIAnswer(
+        `Grid import is currently ${gridImportKW.toFixed(
+          2
+        )} kW. Total demand is ${totalLoadKW.toFixed(
+          2
+        )} kW while solar generation is ${solarKW.toFixed(
+          2
+        )} kW. Battery SoC is ${batterySoC.toFixed(
+          0
+        )}%. The main optimization opportunity is to shift flexible loads toward periods of higher solar generation.`
+      );
 
-  const totalCurrent = energySystem.currentAmps.toFixed(2);
-
-  // =========================================================
-  // LOCAL AI ENGINE
-  // =========================================================
-
-  const advancedAIInsights =
-    generateAdvancedInsights(energySystem);
-
-  // Dynamic AI Insight Generator
-  const getDynamicInsights = () => {
-    const insights = [];
-    const isHeatingActive = devices.find(d => d.id === "heating")?.active;
-    const tempDelta = (insideTemp - outsideTemp).toFixed(1);
-
-    if (isHeatingActive) {
-      insights.push({
-        category: "Home Heating Efficiency",
-        title: `Thermal Delta: ${tempDelta}°C`,
-        description: `Heat Pump HVAC is drawing ${(1800 / (voltage * powerFactor)).toFixed(1)}A to maintain inside home temperature (${insideTemp}°C) vs outside temperature (${outsideTemp}°C).`
-      });
-    } else {
-      insights.push({
-        category: "Thermal Storage Mode",
-        title: `HVAC Inactive — Outside ${outsideTemp}°C`,
-        description: `Indoor heat loss is ~0.4°C/hr. Thermal retention is optimal. Heat pump can remain idle until inside home temperature drops below 19°C.`
-      });
+      return;
     }
 
-    if (solarGen > activePower) {
-      insights.push({
-        category: "Solar Thermal Pre-heating",
-        title: `Surplus Generation: ${solarGen - activePower} W`,
-        description: "PV array is producing more power than active loads. Optimal window to turn on additional appliances or charge storage battery."
-      });
-    } else {
-      insights.push({
-        category: "Grid Import Throttling",
-        title: `Importing ${activePower - solarGen} W from Grid`,
-        description: "Consumption exceeds solar generation. Consider turning off heavy inactive loads to remain within self-generated capacity."
-      });
+    if (
+      question.includes("solar") ||
+      question.includes("sun")
+    ) {
+      if (solarSurplusKW > 0) {
+        setAIAnswer(
+          `Solar generation is currently ${solarKW.toFixed(
+            2
+          )} kW and exceeds demand by ${solarSurplusKW.toFixed(
+            2
+          )} kW. This is a good opportunity to charge the battery or activate flexible loads.`
+        );
+      } else {
+        setAIAnswer(
+          `Solar generation is currently ${solarKW.toFixed(
+            2
+          )} kW while demand is ${totalLoadKW.toFixed(
+            2
+          )} kW. The system has a ${solarDeficitKW.toFixed(
+            2
+          )} kW generation deficit.`
+        );
+      }
+
+      return;
     }
 
-    insights.push({
-      category: "Power Quality Telemetry",
-      title: `Current Draw: ${totalCurrent} A @ ${powerFactor} PF`,
-      description: `Mains voltage steady at ${voltage}V across ${devices.length} registered household appliances.`
-    });
+    if (
+      question.includes("battery") ||
+      question.includes("charge")
+    ) {
+      setAIAnswer(
+        `Battery state of charge is ${batterySoC.toFixed(
+          0
+        )}%. ${
+          batterySoC < 20
+            ? "The battery is low and should be prioritized for charging."
+            : batterySoC > 90
+            ? "The battery is almost full, so additional solar may need to be exported or consumed by flexible loads."
+            : "The battery is in a moderate operating range."
+        }`
+      );
 
-    return insights;
+      return;
+    }
+
+    if (
+      question.includes("power factor") ||
+      question.includes("pf")
+    ) {
+      setAIAnswer(
+        `The simulated power factor is ${powerFactor.toFixed(
+          2
+        )}. Current demand is approximately ${currentAmps.toFixed(
+          2
+        )} A at 230 V. A lower power factor would indicate increased reactive power demand.`
+      );
+
+      return;
+    }
+
+    if (
+      question.includes("cost") ||
+      question.includes("price")
+    ) {
+      setAIAnswer(
+        `At the configured electricity price of €0.32/kWh, current grid demand corresponds to approximately €${estimatedHourlyCost.toFixed(
+          2
+        )} per hour. Reducing grid import or shifting flexible loads can reduce this cost.`
+      );
+
+      return;
+    }
+
+    setAIAnswer(
+      `Current system status: ${energySystem.systemStatus}. Demand is ${totalLoadKW.toFixed(
+        2
+      )} kW, solar generation is ${solarKW.toFixed(
+        2
+      )} kW, battery SoC is ${batterySoC.toFixed(
+        0
+      )}%, and grid import is ${gridImportKW.toFixed(
+        2
+      )} kW. Try asking about grid import, solar, battery, cost or power factor.`
+    );
   };
 
-  const dynamicInsights = getDynamicInsights();
+  /*
+   * ---------------------------------------------------------
+   * WHAT-IF SIMULATOR
+   * ---------------------------------------------------------
+   */
+
+  const runSimulation = () => {
+    const currentModel = energySystem;
+
+    const simulatedModel =
+      calculateEnergySystem({
+        devices,
+        solarGeneration: simulationSolar,
+        batterySoC: batteryStateOfCharge,
+        batteryCapacity: simulationBattery,
+        voltage: 230,
+        powerFactor: 0.94,
+        batteryMaxPower: 5,
+        electricityPrice: 0.32,
+      });
+
+    setSimulationResult({
+      currentGrid:
+        currentModel.gridImportKW,
+
+      simulatedGrid:
+        simulatedModel.gridImportKW,
+
+      currentSolar:
+        currentModel.solarKW,
+
+      simulatedSolar:
+        simulatedModel.solarKW,
+
+      gridDifference:
+        currentModel.gridImportKW -
+        simulatedModel.gridImportKW,
+
+      costDifference:
+        currentModel.estimatedHourlyCost -
+        simulatedModel.estimatedHourlyCost,
+    });
+  };
+
+  const resetSimulation = () => {
+    setSimulationBattery(20);
+    setSimulationSolar(1.2);
+    setSimulationResult(null);
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * SIMULATED 24-HOUR PROFILE
+   * ---------------------------------------------------------
+   */
+
+  const liveChartData = initialStats.map(
+    (item, index) => ({
+      ...item,
+      solar: Number(
+        (
+          solarGenerationKW *
+          Math.max(
+            0,
+            Math.sin(
+              ((index - 2) / 10) *
+                Math.PI
+            )
+          )
+        ).toFixed(1)
+      ),
+    })
+  );
 
   return (
     <div className="app-wrapper">
-      {/* Dark Navy Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <Zap size={22} color="#00e676" />
+          <Zap
+            size={22}
+            color="#00e676"
+          />
           <span>EnergyFlow AI</span>
         </div>
-        
+
         <nav className="nav-group">
-          <div className="nav-item active"><LayoutDashboard size={18} /> Dashboard</div>
-          <div className="nav-item"><CreditCard size={18} /> Service Request</div>
-          <div className="nav-item"><Clock size={18} /> Energy Consumption</div>
-          <div className="nav-item"><PiggyBank size={18} /> Savings & Tariffs</div>
-          <div className="nav-item"><Settings size={18} /> Settings</div>
+          <div className="nav-item active">
+            <LayoutDashboard size={18} />
+            Dashboard
+          </div>
+
+          <div className="nav-item">
+            <CreditCard size={18} />
+            Service Request
+          </div>
+
+          <div className="nav-item">
+            <Clock size={18} />
+            Energy Consumption
+          </div>
+
+          <div className="nav-item">
+            <PiggyBank size={18} />
+            Savings & Tariffs
+          </div>
+
+          <div className="nav-item">
+            <Settings size={18} />
+            Settings
+          </div>
         </nav>
 
-        {/* Upgrade to Premium Option */}
         <div className="premium-card">
-          <ShieldCheck size={26} style={{ margin: "0 auto 6px" }} />
-          <p style={{ margin: 0, fontSize: "13px", fontWeight: "600" }}>Upgrade to Premium</p>
-          <p style={{ margin: "4px 0 0", fontSize: "11px", opacity: 0.8 }}>Unlock AI thermal scheduling & automated grid dispatch</p>
-          <button>Go Premium</button>
+          <ShieldCheck
+            size={26}
+            style={{
+              margin: "0 auto 6px",
+            }}
+          />
+
+          <p
+            style={{
+              margin: 0,
+              fontSize: "13px",
+              fontWeight: "600",
+            }}
+          >
+            Energy Intelligence
+          </p>
+
+          <p
+            style={{
+              margin: "4px 0 0",
+              fontSize: "11px",
+              opacity: 0.8,
+            }}
+          >
+            Local AI energy optimization
+            engine
+          </p>
         </div>
 
         <div className="sidebar-footer">
-          <button className="sidebar-btn-logout"><LogOut size={18} /> Logout</button>
+          <button className="sidebar-btn-logout">
+            <LogOut size={18} />
+            Logout
+          </button>
         </div>
       </aside>
 
-      {/* Main Panel Content */}
       <main className="main-container">
-        {/* Top Header */}
         <header className="top-header">
           <div>
-            <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "700" }}>Energy Command Center</h2>
-            <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: "13px" }}>
-              Real-time load management, heating integration & solar microgrid control
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "22px",
+                fontWeight: "700",
+              }}
+            >
+              Energy Command Center
+            </h2>
+
+            <p
+              style={{
+                margin: "4px 0 0",
+                color: "#64748b",
+                fontSize: "13px",
+              }}
+            >
+              AI-powered microgrid analytics,
+              simulation & load management
             </p>
           </div>
 
           <div className="header-right-tools">
             <div className="clock-badge">
-              <Clock size={16} color="#00c853" />
-              <span>{currentTime.toLocaleTimeString()}</span>
+              <Clock
+                size={16}
+                color="#00c853"
+              />
+              <span>
+                {currentTime.toLocaleTimeString()}
+              </span>
             </div>
 
             <div className="user-profile-box">
-              <div style={{ textAlign: "right" }}>
-                <p style={{ margin: 0, fontSize: "13px", fontWeight: "700", color: "#0f172a" }}>Alex Mercer</p>
-                <p style={{ margin: 0, fontSize: "11px", color: "#00c853", fontWeight: "600" }}>Pro Member</p>
+              <div
+                style={{
+                  textAlign: "right",
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    color: "#0f172a",
+                  }}
+                >
+                  Energy Engineer
+                </p>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "11px",
+                    color: "#00c853",
+                    fontWeight: "600",
+                  }}
+                >
+                  AI Energy Lab
+                </p>
               </div>
+
               <div className="user-avatar">
                 <User size={18} />
               </div>
@@ -226,100 +590,463 @@ const powerFactor = 0.94;
           </div>
         </header>
 
-        {/* Dashboard Grid Layout */}
         <div className="dashboard-grid">
-          {/* Main Left Column */}
           <section className="main-column">
-            {/* Real-time Electrical Metrics */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
-              <div className="card" style={{ padding: "14px" }}>
-                <span style={{ fontSize: "11px", color: "#64748b", fontWeight: "600" }}>ACTIVE POWER</span>
-                <h3 style={{ margin: "6px 0 0", fontSize: "18px" }}>{activePower} W</h3>
+            {/* KPI CARDS */}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(4, 1fr)",
+                gap: "12px",
+              }}
+            >
+              <div
+                className="card"
+                style={{
+                  padding: "14px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#64748b",
+                    fontWeight: "600",
+                  }}
+                >
+                  ACTIVE POWER
+                </span>
+
+                <h3
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "18px",
+                  }}
+                >
+                  {
+                    energySystem.totalLoadWatts
+                  }{" "}
+                  W
+                </h3>
               </div>
 
-              <div className="card" style={{ padding: "14px" }}>
-                <span style={{ fontSize: "11px", color: "#64748b", fontWeight: "600" }}>POWER FACTOR</span>
-                <h3 style={{ margin: "6px 0 0", fontSize: "18px", color: "#00c853" }}>{powerFactor}</h3>
+              <div
+                className="card"
+                style={{
+                  padding: "14px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#64748b",
+                    fontWeight: "600",
+                  }}
+                >
+                  POWER FACTOR
+                </span>
+
+                <h3
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "18px",
+                    color: "#00c853",
+                  }}
+                >
+                  {
+                    energySystem.powerFactor
+                  }
+                </h3>
               </div>
 
-              <div className="card" style={{ padding: "14px" }}>
-                <span style={{ fontSize: "11px", color: "#64748b", fontWeight: "600" }}>MAINS VOLTAGE</span>
-                <h3 style={{ margin: "6px 0 0", fontSize: "18px" }}>{voltage} V</h3>
+              <div
+                className="card"
+                style={{
+                  padding: "14px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#64748b",
+                    fontWeight: "600",
+                  }}
+                >
+                  MAINS VOLTAGE
+                </span>
+
+                <h3
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "18px",
+                  }}
+                >
+                  {energySystem.voltage} V
+                </h3>
               </div>
 
-              <div className="card" style={{ padding: "14px" }}>
-                <span style={{ fontSize: "11px", color: "#64748b", fontWeight: "600" }}>TOTAL CURRENT</span>
-                <h3 style={{ margin: "6px 0 0", fontSize: "18px" }}>{totalCurrent} A</h3>
+              <div
+                className="card"
+                style={{
+                  padding: "14px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#64748b",
+                    fontWeight: "600",
+                  }}
+                >
+                  CURRENT
+                </span>
+
+                <h3
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "18px",
+                  }}
+                >
+                  {
+                    energySystem.currentAmps
+                  }{" "}
+                  A
+                </h3>
               </div>
             </div>
 
-            {/* Dedicated Temperature Cards */}
+            {/* ENGINEERING KPIs */}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(4, 1fr)",
+                gap: "12px",
+                marginTop: "12px",
+              }}
+            >
+              <div className="card">
+                <Sun
+                  size={18}
+                  color="#f59e0b"
+                />
+
+                <p
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "11px",
+                    color: "#64748b",
+                  }}
+                >
+                  SOLAR
+                </p>
+
+                <strong>
+                  {energySystem.solarKW} kW
+                </strong>
+              </div>
+
+              <div className="card">
+                <BatteryCharging
+                  size={18}
+                  color="#00c853"
+                />
+
+                <p
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "11px",
+                    color: "#64748b",
+                  }}
+                >
+                  BATTERY
+                </p>
+
+                <strong>
+                  {energySystem.batterySoC}%
+                </strong>
+              </div>
+
+              <div className="card">
+                <Gauge
+                  size={18}
+                  color="#2563eb"
+                />
+
+                <p
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "11px",
+                    color: "#64748b",
+                  }}
+                >
+                  GRID IMPORT
+                </p>
+
+                <strong>
+                  {
+                    energySystem.gridImportKW
+                  }{" "}
+                  kW
+                </strong>
+              </div>
+
+              <div className="card">
+                <Euro
+                  size={18}
+                  color="#7c3aed"
+                />
+
+                <p
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "11px",
+                    color: "#64748b",
+                  }}
+                >
+                  EST. COST / H
+                </p>
+
+                <strong>
+                  €
+                  {
+                    energySystem.estimatedHourlyCost
+                  }
+                </strong>
+              </div>
+            </div>
+
+            {/* TEMPERATURE */}
+
             <div className="temp-grid">
               <div className="temp-card">
                 <div>
-                  <span style={{ fontSize: "11px", color: "#64748b", fontWeight: "600", textTransform: "UPPERCASE" }}>Inside Home Temperature</span>
-                  <h3 style={{ margin: "4px 0 0", fontSize: "18px", color: "#0f172a" }}>{insideTemp} °C</h3>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      color: "#64748b",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Inside Home Temperature
+                  </span>
+
+                  <h3
+                    style={{
+                      margin: "4px 0 0",
+                      fontSize: "18px",
+                    }}
+                  >
+                    {insideTemp} °C
+                  </h3>
                 </div>
-                <Flame size={22} color="#dc2626" />
+
+                <Flame
+                  size={22}
+                  color="#dc2626"
+                />
               </div>
 
               <div className="temp-card">
                 <div>
-                  <span style={{ fontSize: "11px", color: "#64748b", fontWeight: "600", textTransform: "UPPERCASE" }}>Outside Temperature</span>
-                  <h3 style={{ margin: "4px 0 0", fontSize: "18px", color: "#0f172a" }}>{outsideTemp} °C</h3>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      color: "#64748b",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Outside Temperature
+                  </span>
+
+                  <h3
+                    style={{
+                      margin: "4px 0 0",
+                      fontSize: "18px",
+                    }}
+                  >
+                    {outsideTemp} °C
+                  </h3>
                 </div>
-                <Thermometer size={22} color="#2563eb" />
+
+                <Thermometer
+                  size={22}
+                  color="#2563eb"
+                />
               </div>
             </div>
 
-            {/* Active Household Loads Controls */}
+            {/* SOLAR CONTROL */}
+
+            <div className="card">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize: "15px",
+                  }}
+                >
+                  Solar Generation
+                </h4>
+
+                <strong>
+                  {solarGenerationKW} kW
+                </strong>
+              </div>
+
+              <input
+                type="range"
+                min="0"
+                max="8"
+                step="0.1"
+                value={solarGenerationKW}
+                onChange={(e) =>
+                  setSolarGenerationKW(
+                    Number(e.target.value)
+                  )
+                }
+                style={{
+                  width: "100%",
+                  marginTop: "12px",
+                }}
+              />
+
+              <p
+                style={{
+                  margin: "6px 0 0",
+                  fontSize: "11px",
+                  color: "#64748b",
+                }}
+              >
+                Adjust simulated PV output to
+                observe AI recommendations.
+              </p>
+            </div>
+
+            {/* DEVICE CONTROL */}
+
             <div className="card">
               <div className="devices-header-actions">
-                <h4 style={{ margin: 0, fontSize: "15px" }}>Active Household Loads ({devices.filter(d => d.active).length}/{devices.length})</h4>
-                <button className="btn-add-appliance" onClick={() => setShowAddForm(!showAddForm)}>
-                  <Plus size={14} /> {showAddForm ? "Cancel" : "Add Appliance"}
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize: "15px",
+                  }}
+                >
+                  Active Household Loads (
+                  {
+                    devices.filter(
+                      (d) => d.active
+                    ).length
+                  }
+                  /{devices.length})
+                </h4>
+
+                <button
+                  className="btn-add-appliance"
+                  onClick={() =>
+                    setShowAddForm(
+                      !showAddForm
+                    )
+                  }
+                >
+                  <Plus size={14} />
+
+                  {showAddForm
+                    ? "Cancel"
+                    : "Add Appliance"}
                 </button>
               </div>
 
               {showAddForm && (
-                <form className="add-device-form" onSubmit={addDevice}>
-                  <input 
-                    type="text" 
-                    placeholder="Appliance Name (e.g. Microwave)" 
+                <form
+                  className="add-device-form"
+                  onSubmit={addDevice}
+                >
+                  <input
+                    type="text"
+                    placeholder="Appliance Name"
                     value={newDeviceName}
-                    onChange={(e) => setNewDeviceName(e.target.value)}
+                    onChange={(e) =>
+                      setNewDeviceName(
+                        e.target.value
+                      )
+                    }
                     required
                   />
-                  <input 
-                    type="number" 
-                    placeholder="Power (Watts)" 
+
+                  <input
+                    type="number"
+                    placeholder="Power (Watts)"
                     value={newDevicePower}
-                    onChange={(e) => setNewDevicePower(e.target.value)}
+                    onChange={(e) =>
+                      setNewDevicePower(
+                        e.target.value
+                      )
+                    }
                     required
                   />
-                  <button type="submit">Save Appliance</button>
+
+                  <button type="submit">
+                    Save Appliance
+                  </button>
                 </form>
               )}
 
               <div className="devices-grid">
                 {devices.map((device) => {
-                  const Icon = device.icon;
+                  const Icon =
+                    device.icon;
+
                   return (
-                    <div 
-                      key={device.id} 
-                      className={`device-card ${device.active ? "active" : ""}`} 
-                      onClick={() => toggleDevice(device.id)}
+                    <div
+                      key={device.id}
+                      className={`device-card ${
+                        device.active
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        toggleDevice(
+                          device.id
+                        )
+                      }
                     >
                       <div className="device-header">
                         <Icon size={18} />
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems:
+                              "center",
+                            gap: "8px",
+                          }}
+                        >
                           <span className="device-status-badge">
-                            {device.active ? "ON" : "OFF"}
+                            {device.active
+                              ? "ON"
+                              : "OFF"}
                           </span>
-                          <button 
-                            className="delete-btn" 
-                            title="Remove Appliance" 
-                            onClick={(e) => removeDevice(device.id, e)}
+
+                          <button
+                            className="delete-btn"
+                            title="Remove Appliance"
+                            onClick={(e) =>
+                              removeDevice(
+                                device.id,
+                                e
+                              )
+                            }
                           >
                             <Trash2 size={14} />
                           </button>
@@ -327,8 +1054,13 @@ const powerFactor = 0.94;
                       </div>
 
                       <div className="device-card-content">
-                        <h4 className="device-title">{device.name}</h4>
-                        <span className="device-watt-badge">{device.power} W</span>
+                        <h4 className="device-title">
+                          {device.name}
+                        </h4>
+
+                        <span className="device-watt-badge">
+                          {device.power} W
+                        </span>
                       </div>
                     </div>
                   );
@@ -336,119 +1068,1062 @@ const powerFactor = 0.94;
               </div>
             </div>
 
-            {/* Daily Power Usage Chart */}
+            {/* POWER PROFILE */}
+
             <div className="card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h4 style={{ margin: 0, fontSize: "15px" }}>24-Hour Consumption Profile</h4>
-                <span style={{ fontSize: "12px", color: "#00c853", fontWeight: "600" }}>Live Microgrid Data</span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize: "15px",
+                  }}
+                >
+                  Energy Consumption & Solar Profile
+                </h4>
+
+                <span
+                  style={{
+                    fontSize: "12px",
+                    color: "#00c853",
+                    fontWeight: "600",
+                  }}
+                >
+                  Live Simulation
+                </span>
               </div>
-              <div style={{ width: "100%", height: 180, marginTop: "12px" }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={initialStats}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                    <YAxis hide />
-                    <Tooltip cursor={{ fill: '#f8fafc' }} />
-                    <Bar dataKey="consumption" fill="#1e293b" radius={[4, 4, 0, 0]} />
-                  </BarChart>
+
+              <div
+                style={{
+                  width: "100%",
+                  height: 200,
+                  marginTop: "12px",
+                }}
+              >
+                <ResponsiveContainer
+                  width="100%"
+                  height="100%"
+                >
+                  <LineChart
+                    data={liveChartData}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#f1f5f9"
+                    />
+
+                    <XAxis
+                      dataKey="day"
+                      axisLine={false}
+                      tickLine={false}
+                    />
+
+                    <YAxis
+                      hide
+                    />
+
+                    <Tooltip />
+
+                    <Line
+                      type="monotone"
+                      dataKey="consumption"
+                      stroke="#1e293b"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+
+                    <Line
+                      type="monotone"
+                      dataKey="solar"
+                      stroke="#f59e0b"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
           </section>
 
-          {/* Right Side Column */}
+          {/* RIGHT COLUMN */}
+
           <aside className="side-column">
-            {/* CSV Data Import Box */}
-            <div className="interactive-csv-card">
-              <h4 style={{ margin: "0 0 6px", fontSize: "15px", color: "#0f172a" }}>Import Smart Meter Data</h4>
-              <p style={{ margin: 0, fontSize: "12px", color: "#64748b", lineHeight: "1.4" }}>
-                Upload your raw CSV consumption file to calibrate AI dynamic tariff forecasts & load analytics!
-              </p>
-              <label htmlFor="csv-file-input" className="csv-upload-btn-large">
-                <Upload size={16} /> Choose CSV Data File
-              </label>
-              <input 
-                id="csv-file-input" 
-                type="file" 
-                accept=".csv" 
-                style={{ display: "none" }} 
-                onChange={handleFileUpload} 
-              />
-              <p style={{ margin: "8px 0 0", fontSize: "11px", color: "#64748b" }}>{fileName}</p>
+            {/* SYSTEM STATUS */}
+
+            <div className="card">
+              <h4
+                style={{
+                  margin: "0 0 10px",
+                  fontSize: "15px",
+                }}
+              >
+                System Status
+              </h4>
+
+              <div
+                style={{
+                  padding: "12px",
+                  borderRadius: "10px",
+                  background:
+                    "#f0fdf4",
+                  border:
+                    "1px solid #bbf7d0",
+                }}
+              >
+                <strong
+                  style={{
+                    color: "#15803d",
+                  }}
+                >
+                  {energySystem.systemStatus}
+                </strong>
+
+                <p
+                  style={{
+                    margin:
+                      "5px 0 0",
+                    fontSize: "11px",
+                    color: "#64748b",
+                  }}
+                >
+                  Local engineering
+                  intelligence active
+                </p>
+              </div>
             </div>
 
-            {/* SMS Emergency & Outage Alerts Block */}
+            {/* CSV */}
+
+            <div className="interactive-csv-card">
+              <h4
+                style={{
+                  margin: "0 0 6px",
+                  fontSize: "15px",
+                }}
+              >
+                Import Smart Meter Data
+              </h4>
+
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "12px",
+                  color: "#64748b",
+                }}
+              >
+                Upload a CSV file for future
+                energy analytics.
+              </p>
+
+              <label
+                htmlFor="csv-file-input"
+                className="csv-upload-btn-large"
+              >
+                <Upload size={16} />
+                Choose CSV Data File
+              </label>
+
+              <input
+                id="csv-file-input"
+                type="file"
+                accept=".csv"
+                style={{
+                  display: "none",
+                }}
+                onChange={
+                  handleFileUpload
+                }
+              />
+
+              <p
+                style={{
+                  margin:
+                    "8px 0 0",
+                  fontSize: "11px",
+                  color: "#64748b",
+                }}
+              >
+                {fileName}
+              </p>
+            </div>
+
+            {/* BATTERY */}
+
             <div className="card">
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-                <MessageSquare size={16} color="#00c853" />
-                <h4 style={{ margin: 0, fontSize: "15px" }}>SMS & Grid Alerts</h4>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize: "15px",
+                  }}
+                >
+                  Storage Battery
+                </h4>
+
+                <BatteryCharging
+                  size={18}
+                  color="#00c853"
+                />
               </div>
-              <div className="sms-alert-box">
-                <div>
-                  <p style={{ margin: 0, fontSize: "13px", fontWeight: "600" }}>Peak Outage Notifications</p>
-                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#64748b" }}>Instant text alert when grid imports spike</p>
+
+              <div
+                style={{
+                  marginTop: "10px",
+                  background:
+                    "#f8fafc",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  textAlign: "center",
+                  border:
+                    "1px solid #e2e8f0",
+                }}
+              >
+                <h2
+                  style={{
+                    margin: 0,
+                    color: "#00c853",
+                  }}
+                >
+                  {
+                    energySystem.batterySoC
+                  }
+                  %
+                </h2>
+
+                <p
+                  style={{
+                    margin:
+                      "2px 0 0",
+                    fontSize: "11px",
+                    color: "#64748b",
+                  }}
+                >
+                  State of Charge
+                </p>
+              </div>
+
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={
+                  batteryStateOfCharge
+                }
+                onChange={(e) =>
+                  setBatteryStateOfCharge(
+                    Number(
+                      e.target.value
+                    )
+                  )
+                }
+                style={{
+                  width: "100%",
+                  marginTop: "12px",
+                }}
+              />
+            </div>
+
+            {/* GRID */}
+
+            <div className="card">
+              <h4
+                style={{
+                  margin:
+                    "0 0 10px",
+                  fontSize: "15px",
+                }}
+              >
+                Grid Telemetry
+              </h4>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "1fr 1fr",
+                  gap: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    background:
+                      "#f8fafc",
+                    padding: "10px",
+                    borderRadius:
+                      "10px",
+                    border:
+                      "1px solid #e2e8f0",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "4px",
+                      color: "#00c853",
+                      fontSize: "10px",
+                      fontWeight: "700",
+                    }}
+                  >
+                    <ArrowUpRight
+                      size={12}
+                    />
+                    EXPORT
+                  </div>
+
+                  <h4
+                    style={{
+                      margin:
+                        "4px 0 0",
+                    }}
+                  >
+                    {
+                      energySystem.gridExportKW
+                    }{" "}
+                    kW
+                  </h4>
                 </div>
-                <div 
-                  className={`switch-toggle ${smsAlerts ? "active" : ""}`} 
-                  onClick={() => setSmsAlerts(!smsAlerts)}
+
+                <div
+                  style={{
+                    background:
+                      "#f8fafc",
+                    padding: "10px",
+                    borderRadius:
+                      "10px",
+                    border:
+                      "1px solid #e2e8f0",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "4px",
+                      color: "#dc2626",
+                      fontSize: "10px",
+                      fontWeight: "700",
+                    }}
+                  >
+                    <ArrowDownLeft
+                      size={12}
+                    />
+                    IMPORT
+                  </div>
+
+                  <h4
+                    style={{
+                      margin:
+                        "4px 0 0",
+                    }}
+                  >
+                    {
+                      energySystem.gridImportKW
+                    }{" "}
+                    kW
+                  </h4>
+                </div>
+              </div>
+            </div>
+
+            {/* AI COPILOT */}
+
+            <div className="card">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems:
+                    "center",
+                  gap: "8px",
+                  marginBottom:
+                    "10px",
+                }}
+              >
+                <Bot
+                  size={18}
+                  color="#7c3aed"
+                />
+
+                <h4
+                  style={{
+                    margin: 0,
+                  }}
+                >
+                  EnergyFlow AI Copilot
+                </h4>
+              </div>
+
+              <textarea
+                value={aiQuestion}
+                onChange={(e) =>
+                  setAIQuestion(
+                    e.target.value
+                  )
+                }
+                placeholder="Ask: Why is my grid import high?"
+                rows={3}
+                style={{
+                  width: "100%",
+                  boxSizing:
+                    "border-box",
+                  border:
+                    "1px solid #e2e8f0",
+                  borderRadius:
+                    "8px",
+                  padding: "8px",
+                  resize: "vertical",
+                }}
+              />
+
+              <button
+                onClick={
+                  answerAIQuestion
+                }
+                style={{
+                  marginTop: "8px",
+                  width: "100%",
+                  padding: "9px",
+                  border: "none",
+                  borderRadius:
+                    "8px",
+                  background:
+                    "#0f172a",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                <Bot
+                  size={14}
+                  style={{
+                    verticalAlign:
+                      "middle",
+                    marginRight:
+                      "5px",
+                  }}
+                />
+                Analyze System
+              </button>
+
+              {aiAnswer && (
+                <div
+                  style={{
+                    marginTop:
+                      "10px",
+                    padding: "10px",
+                    borderRadius:
+                      "8px",
+                    background:
+                      "#f8fafc",
+                    fontSize:
+                      "12px",
+                    lineHeight:
+                      "1.5",
+                    color:
+                      "#334155",
+                  }}
+                >
+                  {aiAnswer}
+                </div>
+              )}
+            </div>
+
+            {/* SMS */}
+
+            <div className="card">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems:
+                    "center",
+                  gap: "8px",
+                }}
+              >
+                <MessageSquare
+                  size={16}
+                  color="#00c853"
+                />
+
+                <h4
+                  style={{
+                    margin: 0,
+                  }}
+                >
+                  Grid Alerts
+                </h4>
+              </div>
+
+              <div
+                className="sms-alert-box"
+                style={{
+                  marginTop: "10px",
+                }}
+              >
+                <div>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize:
+                        "13px",
+                      fontWeight:
+                        "600",
+                    }}
+                  >
+                    Peak Demand Alerts
+                  </p>
+
+                  <p
+                    style={{
+                      margin:
+                        "2px 0 0",
+                      fontSize:
+                        "11px",
+                      color:
+                        "#64748b",
+                    }}
+                  >
+                    Local simulation
+                    alert system
+                  </p>
+                </div>
+
+                <div
+                  className={`switch-toggle ${
+                    smsAlerts
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    setSmsAlerts(
+                      !smsAlerts
+                    )
+                  }
                 >
                   <div className="switch-circle" />
-                </div>
-              </div>
-            </div>
-
-            {/* Storage Battery */}
-            <div className="card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <h4 style={{ margin: 0, fontSize: "15px" }}>Storage Battery</h4>
-                <BatteryCharging size={18} color="#00c853" />
-              </div>
-              <div style={{ background: "#f8fafc", padding: "12px", borderRadius: "10px", textAlign: "center", border: "1px solid #e2e8f0" }}>
-                <h2 style={{ margin: 0, fontSize: "24px", color: "#00c853" }}>{batterySoC}%</h2>
-                <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#64748b" }}>State of Charge (SoC)</p>
-              </div>
-            </div>
-
-            {/* Grid Flow Telemetry */}
-            <div className="card">
-              <h4 style={{ margin: "0 0 10px", fontSize: "15px" }}>Grid Telemetry</h4>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                <div style={{ background: "#f8fafc", padding: "10px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#00c853", fontSize: "10px", fontWeight: "700" }}>
-                    <ArrowUpRight size={12} /> EXPORT
-                  </div>
-                  <h4 style={{ margin: "4px 0 0", fontSize: "15px" }}>{Math.max(0, solarGen - activePower)} W</h4>
-                </div>
-                <div style={{ background: "#f8fafc", padding: "10px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#dc2626", fontSize: "10px", fontWeight: "700" }}>
-                    <ArrowDownLeft size={12} /> IMPORT
-                  </div>
-                  <h4 style={{ margin: "4px 0 0", fontSize: "15px" }}>{Math.max(0, activePower - solarGen)} W</h4>
                 </div>
               </div>
             </div>
           </aside>
         </div>
 
-        {/* Dynamic AI Energy Insights */}
+        {/* WHAT-IF SIMULATOR */}
+
+        <section
+          style={{
+            marginTop: "16px",
+          }}
+        >
+          <div className="card">
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "space-between",
+                alignItems:
+                  "center",
+                marginBottom:
+                  "12px",
+              }}
+            >
+              <div>
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize:
+                      "17px",
+                  }}
+                >
+                  <Play
+                    size={17}
+                    style={{
+                      verticalAlign:
+                        "middle",
+                      marginRight:
+                        "6px",
+                    }}
+                  />
+                  What-If Energy Simulator
+                </h4>
+
+                <p
+                  style={{
+                    margin:
+                      "4px 0 0",
+                    fontSize:
+                      "12px",
+                    color:
+                      "#64748b",
+                  }}
+                >
+                  Test alternative
+                  energy-system
+                  configurations without
+                  changing the live system.
+                </p>
+              </div>
+
+              <button
+                onClick={
+                  resetSimulation
+                }
+                style={{
+                  border:
+                    "1px solid #e2e8f0",
+                  background:
+                    "white",
+                  borderRadius:
+                    "8px",
+                  padding:
+                    "7px 10px",
+                  cursor:
+                    "pointer",
+                }}
+              >
+                <RotateCcw
+                  size={14}
+                />
+              </button>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "1fr 1fr",
+                gap: "20px",
+              }}
+            >
+              <div>
+                <label
+                  style={{
+                    fontSize:
+                      "12px",
+                    fontWeight:
+                      "600",
+                  }}
+                >
+                  Simulated Battery
+                  Capacity:{" "}
+                  {
+                    simulationBattery
+                  }{" "}
+                  kWh
+                </label>
+
+                <input
+                  type="range"
+                  min="5"
+                  max="100"
+                  step="5"
+                  value={
+                    simulationBattery
+                  }
+                  onChange={(e) =>
+                    setSimulationBattery(
+                      Number(
+                        e.target.value
+                      )
+                    )
+                  }
+                  style={{
+                    width:
+                      "100%",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    fontSize:
+                      "12px",
+                    fontWeight:
+                      "600",
+                  }}
+                >
+                  Simulated Solar:
+                  {" "}
+                  {
+                    simulationSolar
+                  }{" "}
+                  kW
+                </label>
+
+                <input
+                  type="range"
+                  min="0"
+                  max="15"
+                  step="0.1"
+                  value={
+                    simulationSolar
+                  }
+                  onChange={(e) =>
+                    setSimulationSolar(
+                      Number(
+                        e.target.value
+                      )
+                    )
+                  }
+                  style={{
+                    width:
+                      "100%",
+                  }}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={
+                runSimulation
+              }
+              style={{
+                marginTop:
+                  "15px",
+                padding:
+                  "10px 16px",
+                border: "none",
+                borderRadius:
+                  "8px",
+                background:
+                  "#00c853",
+                color:
+                  "#052e16",
+                fontWeight:
+                  "700",
+                cursor:
+                  "pointer",
+              }}
+            >
+              Run Energy Simulation
+            </button>
+
+            {simulationResult && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(3, 1fr)",
+                  gap: "10px",
+                  marginTop:
+                    "15px",
+                }}
+              >
+                <div
+                  style={{
+                    padding:
+                      "12px",
+                    background:
+                      "#f8fafc",
+                    borderRadius:
+                      "8px",
+                  }}
+                >
+                  <small>
+                    Current Grid
+                  </small>
+
+                  <strong
+                    style={{
+                      display:
+                        "block",
+                      marginTop:
+                        "5px",
+                    }}
+                  >
+                    {
+                      simulationResult.currentGrid
+                    }{" "}
+                    kW
+                  </strong>
+                </div>
+
+                <div
+                  style={{
+                    padding:
+                      "12px",
+                    background:
+                      "#f8fafc",
+                    borderRadius:
+                      "8px",
+                  }}
+                >
+                  <small>
+                    Simulated Grid
+                  </small>
+
+                  <strong
+                    style={{
+                      display:
+                        "block",
+                      marginTop:
+                        "5px",
+                    }}
+                  >
+                    {
+                      simulationResult.simulatedGrid
+                    }{" "}
+                    kW
+                  </strong>
+                </div>
+
+                <div
+                  style={{
+                    padding:
+                      "12px",
+                    background:
+                      simulationResult.gridDifference >=
+                      0
+                        ? "#f0fdf4"
+                        : "#fef2f2",
+                    borderRadius:
+                      "8px",
+                  }}
+                >
+                  <small>
+                    Grid Improvement
+                  </small>
+
+                  <strong
+                    style={{
+                      display:
+                        "block",
+                      marginTop:
+                        "5px",
+                    }}
+                  >
+                    {simulationResult.gridDifference >=
+                    0
+                      ? "↓ "
+                      : "↑ "}
+                    {Math.abs(
+                      simulationResult.gridDifference
+                    ).toFixed(2)}{" "}
+                    kW
+                  </strong>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* AI INSIGHTS */}
+
         <section className="bottom-insights-container">
           <div className="card">
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Sparkles size={18} color="#00c853" />
-              <h4 style={{ margin: 0, fontSize: "16px" }}>AI Energy Insights & Thermal Load Optimization</h4>
+            <div
+              style={{
+                display: "flex",
+                alignItems:
+                  "center",
+                gap: "8px",
+              }}
+            >
+              <Sparkles
+                size={18}
+                color="#00c853"
+              />
+
+              <h4
+                style={{
+                  margin: 0,
+                  fontSize:
+                    "16px",
+                }}
+              >
+                Local AI Energy Intelligence
+              </h4>
             </div>
 
             <div className="insights-grid">
-              {dynamicInsights.map((item, idx) => (
-                <div key={idx} className="insight-card">
-                  <span style={{ fontSize: "10px", fontWeight: "700", textTransform: "uppercase", padding: "2px 6px", borderRadius: "4px", background: "#e8f5e9", color: "#2e7d32" }}>
-                    {item.category}
-                  </span>
-                  <h5 style={{ margin: "8px 0 4px", fontSize: "14px" }}>⚡ {item.title}</h5>
-                  <p style={{ margin: 0, fontSize: "12px", color: "#64748b", lineHeight: "1.5" }}>{item.description}</p>
-                </div>
-              ))}
+              {aiInsights.map(
+                (item, idx) => (
+                  <div
+                    key={idx}
+                    className="insight-card"
+                  >
+                    <span
+                      style={{
+                        fontSize:
+                          "10px",
+                        fontWeight:
+                          "700",
+                        textTransform:
+                          "uppercase",
+                        padding:
+                          "2px 6px",
+                        borderRadius:
+                          "4px",
+                        background:
+                          item.severity ===
+                          "warning"
+                            ? "#fef3c7"
+                            : item.severity ===
+                              "success"
+                            ? "#dcfce7"
+                            : "#e0f2fe",
+                        color:
+                          item.severity ===
+                          "warning"
+                            ? "#92400e"
+                            : item.severity ===
+                              "success"
+                            ? "#166534"
+                            : "#075985",
+                      }}
+                    >
+                      {item.category}
+                    </span>
+
+                    <h5
+                      style={{
+                        margin:
+                          "8px 0 4px",
+                        fontSize:
+                          "14px",
+                      }}
+                    >
+                      ⚡ {item.title}
+                    </h5>
+
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize:
+                          "12px",
+                        color:
+                          "#64748b",
+                        lineHeight:
+                          "1.5",
+                      }}
+                    >
+                      {
+                        item.description
+                      }
+                    </p>
+
+                    <p
+                      style={{
+                        margin:
+                          "8px 0 0",
+                        fontSize:
+                          "11px",
+                        fontWeight:
+                          "600",
+                        color:
+                          "#0f172a",
+                      }}
+                    >
+                      Recommendation:
+                      {" "}
+                      {
+                        item.recommendation
+                      }
+                    </p>
+                  </div>
+                )
+              )}
             </div>
+          </div>
+        </section>
+
+        {/* FOOTER METRICS */}
+
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(3, 1fr)",
+            gap: "12px",
+            marginTop:
+              "12px",
+            marginBottom:
+              "20px",
+          }}
+        >
+          <div className="card">
+            <Leaf
+              size={18}
+              color="#16a34a"
+            />
+
+            <strong
+              style={{
+                display:
+                  "block",
+                marginTop:
+                  "6px",
+              }}
+            >
+              {
+                energySystem.estimatedHourlyCO2
+              }{" "}
+              kg CO₂/h
+            </strong>
+
+            <small>
+              Estimated grid emissions
+            </small>
+          </div>
+
+          <div className="card">
+            <Gauge
+              size={18}
+              color="#2563eb"
+            />
+
+            <strong
+              style={{
+                display:
+                  "block",
+                marginTop:
+                  "6px",
+              }}
+            >
+              {
+                energySystem.renewableUtilization
+              }
+              %
+            </strong>
+
+            <small>
+              Renewable utilization
+            </small>
+          </div>
+
+          <div className="card">
+            <BatteryCharging
+              size={18}
+              color="#7c3aed"
+            />
+
+            <strong
+              style={{
+                display:
+                  "block",
+                marginTop:
+                  "6px",
+              }}
+            >
+              {
+                energySystem.batteryEnergyKWh
+              }{" "}
+              kWh
+            </strong>
+
+            <small>
+              Stored battery energy
+            </small>
           </div>
         </section>
       </main>
