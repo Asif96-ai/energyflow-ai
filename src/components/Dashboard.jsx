@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-
+import EnergyAdvisor from "./EnergyAdvisor";
 import {
   Zap,
   Lightbulb,
@@ -2036,7 +2036,16 @@ function Dashboard() {
             </div>
           </div>
         </section>
+  {/* V2.1 ENERGY ADVISOR */}
 
+        <EnergyAdvisor
+          activePower={energySystem.totalLoadKW}
+          voltage={energySystem.voltage}
+          powerFactor={energySystem.powerFactor}
+          current={energySystem.currentAmps}
+          solarGen={energySystem.solarKW}
+          batterySoC={energySystem.batterySoC}
+        />
         {/* FOOTER METRICS */}
 
         <section
@@ -2130,5 +2139,4 @@ function Dashboard() {
     </div>
   );
 }
-
 export default Dashboard;
