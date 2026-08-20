@@ -24,7 +24,7 @@ https://github.com/Asif96-ai/energyflow-ai
 
 ### Main Energy Dashboard
 
-![EnergyFlow AI Dashboard](docs/screenshots/dashboard.png)
+![EnergyFlow AI Dashboard](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/dashboard.png)
 
 The main dashboard provides an overview of electrical load,
 solar generation, battery status, grid dependency, voltage,
@@ -34,7 +34,7 @@ current, power factor, and energy performance.
 
 ### AI Energy Advisor
 
-![AI Energy Advisor](docs/screenshots/energy-advisor.png)
+![AI Energy Advisor](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/energy-advisor.png)
 
 The AI Energy Advisor analyzes the current energy-system
 conditions and provides engineering-oriented recommendations
@@ -44,27 +44,23 @@ battery management, power factor, and grid dependency.
 ---
 
 ### What-If Energy Simulator
-![What-If Energy Simulator](docs/screenshots/what-if.png)
 
-The What-If simulator allows users to test alternative
-solar-generation and battery scenarios without changing
-the live energy system.
+![What-If Energy Simulator](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/what-if.png)
 
-Users can compare:
+The What-If Energy Simulator allows users to test alternative
+solar-generation and battery scenarios without changing the
+live energy system.
 
-- Current grid demand
-- Simulated grid demand
-- Grid-load improvement
-- Percentage improvement
+---
 
 ### AI Copilot
 
-![AI Copilot](docs/screenshots/ai-copilot.png)
+![AI Copilot](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/ai-copilot.png)
 
-The local AI Copilot provides system analysis based on
-current energy conditions and allows users to ask questions
-about grid import, solar generation, battery status,
-energy cost, and power factor.
+The local AI Copilot provides system analysis based on current
+energy conditions and allows users to ask questions about
+grid import, solar generation, battery status, energy cost,
+and power factor.
 
 
 # Core Features
