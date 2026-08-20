@@ -126,7 +126,7 @@ function Dashboard() {
     useState("");
 
   const [simulationBattery, setSimulationBattery] =
-    useState(20);
+    useState(50);
 
   const [simulationSolar, setSimulationSolar] =
     useState(1.2);
@@ -374,50 +374,73 @@ function Dashboard() {
    * ---------------------------------------------------------
    */
 
-  const runSimulation = () => {
-    const currentModel = energySystem;
+const runSimulation = () => {
+  const currentModel = energySystem;
 
-    const simulatedModel =
-      calculateEnergySystem({
-        devices,
-        solarGeneration: simulationSolar,
-        batterySoC: batteryStateOfCharge,
-        batteryCapacity: simulationBattery,
-        voltage: 230,
-        powerFactor: 0.94,
-        batteryMaxPower: 5,
-        electricityPrice: 0.32,
-      });
+  const simulatedModel = calculateEnergySystem({
+    devices,
+    solarGeneration: simulationSolar,
 
-    setSimulationResult({
-      currentGrid:
-        currentModel.gridImportKW,
+    // What-If battery slider represents SOC
+    batterySoC: simulationBattery,
 
-      simulatedGrid:
-        simulatedModel.gridImportKW,
+    // Fixed simulated battery capacity
+    batteryCapacity: 20,
 
-      currentSolar:
-        currentModel.solarKW,
+    voltage: 230,
+    powerFactor: 0.94,
+    batteryMaxPower: 5,
+    electricityPrice: 0.32,
+  });
 
-      simulatedSolar:
-        simulatedModel.solarKW,
+  const currentGrid =
+    Number(currentModel.gridImportKW) || 0;
 
-      gridDifference:
-        currentModel.gridImportKW -
-        simulatedModel.gridImportKW,
+  const simulatedGrid =
+    Number(simulatedModel.gridImportKW) || 0;
 
-      costDifference:
-        currentModel.estimatedHourlyCost -
-        simulatedModel.estimatedHourlyCost,
-    });
-  };
+  const gridDifference =
+    currentGrid - simulatedGrid;
 
-  const resetSimulation = () => {
-    setSimulationBattery(20);
-    setSimulationSolar(1.2);
-    setSimulationResult(null);
-  };
+  const gridImprovementPercent =
+    currentGrid > 0
+      ? (gridDifference / currentGrid) * 100
+      : 0;
 
+  setSimulationResult({
+    currentGrid,
+    simulatedGrid,
+
+    currentSolar:
+      Number(currentModel.solarKW) || 0,
+
+    simulatedSolar:
+      Number(simulatedModel.solarKW) || 0,
+
+    currentBattery:
+      Number(currentModel.batterySoC) || 0,
+
+    simulatedBattery:
+      Number(simulatedModel.batterySoC) || 0,
+
+    gridDifference,
+
+    gridImprovementPercent,
+
+    costDifference:
+      (Number(
+        currentModel.estimatedHourlyCost
+      ) || 0) -
+      (Number(
+        simulatedModel.estimatedHourlyCost
+      ) || 0),
+  });
+};
+ const resetSimulation = () => {
+  setSimulationBattery(50);
+  setSimulationSolar(1.2);
+  setSimulationResult(null);
+};
   /*
    * ---------------------------------------------------------
    * SIMULATED 24-HOUR PROFILE
@@ -1713,45 +1736,44 @@ function Dashboard() {
                       "600",
                   }}
                 >
-                  Simulated Battery
-                  Capacity:{" "}
-                  {
-                    simulationBattery
-                  }{" "}
-                  kWh
-                </label>
+                  <div>
+  <label
+    style={{
+      fontSize: "12px",
+      fontWeight: "600",
+    }}
+  >
+    Simulated Battery SOC:{" "}
+    {simulationBattery}%
+  </label>
 
-                <input
-                  type="range"
-                  min="5"
-                  max="100"
-                  step="5"
-                  value={
-                    simulationBattery
-                  }
-                  onChange={(e) =>
-                    setSimulationBattery(
-                      Number(
-                        e.target.value
-                      )
-                    )
-                  }
-                  style={{
-                    width:
-                      "100%",
-                  }}
-                />
-              </div>
+  <input
+    type="range"
+    min="0"
+    max="100"
+    step="5"
+    value={simulationBattery}
+    onChange={(e) =>
+      setSimulationBattery(
+        Number(e.target.value)
+      )
+    }
+    style={{
+      width: "100%",
+      marginTop: "8px",
+    }}
+  />
 
-              <div>
-                <label
-                  style={{
-                    fontSize:
-                      "12px",
-                    fontWeight:
-                      "600",
-                  }}
-                >
+  <p
+    style={{
+      margin: "5px 0 0",
+      fontSize: "11px",
+      color: "#64748b",
+    }}
+  >
+    Test different battery charge levels.
+  </p>
+</div>
                   Simulated Solar:
                   {" "}
                   {
@@ -1809,111 +1831,233 @@ function Dashboard() {
             </button>
 
             {simulationResult && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(3, 1fr)",
-                  gap: "10px",
-                  marginTop:
-                    "15px",
-                }}
-              >
-                <div
-                  style={{
-                    padding:
-                      "12px",
-                    background:
-                      "#f8fafc",
-                    borderRadius:
-                      "8px",
-                  }}
-                >
-                  <small>
-                    Current Grid
-                  </small>
+  <div
+    style={{
+      marginTop: "15px",
+    }}
+  >
+    {/* GRID COMPARISON */}
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns:
+          "repeat(2, minmax(0, 1fr))",
+        gap: "10px",
+      }}
+    >
+      {/* CURRENT GRID */}
+      <div
+        style={{
+          padding: "12px",
+          background: "#f8fafc",
+          borderRadius: "8px",
+          border:
+            "1px solid #e2e8f0",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            alignItems: "center",
+            marginBottom: "8px",
+          }}
+        >
+          <small>
+            Current Grid
+          </small>
 
-                  <strong
-                    style={{
-                      display:
-                        "block",
-                      marginTop:
-                        "5px",
-                    }}
-                  >
-                    {
-                      simulationResult.currentGrid
-                    }{" "}
-                    kW
-                  </strong>
-                </div>
+          <strong>
+            {Number(
+              simulationResult.currentGrid
+            ).toFixed(2)}{" "}
+            kW
+          </strong>
+        </div>
 
-                <div
-                  style={{
-                    padding:
-                      "12px",
-                    background:
-                      "#f8fafc",
-                    borderRadius:
-                      "8px",
-                  }}
-                >
-                  <small>
-                    Simulated Grid
-                  </small>
+        <div
+          style={{
+            width: "100%",
+            height: "12px",
+            background: "#e2e8f0",
+            borderRadius: "999px",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: `${Math.min(
+                100,
+                Math.max(
+                  0,
+                  Number(
+                    simulationResult.currentGrid
+                  ) * 20
+                )
+              )}%`,
+              height: "100%",
+              background: "#64748b",
+              borderRadius: "999px",
+              transition:
+                "width 0.4s ease",
+            }}
+          />
+        </div>
+      </div>
 
-                  <strong
-                    style={{
-                      display:
-                        "block",
-                      marginTop:
-                        "5px",
-                    }}
-                  >
-                    {
-                      simulationResult.simulatedGrid
-                    }{" "}
-                    kW
-                  </strong>
-                </div>
+      {/* SIMULATED GRID */}
+      <div
+        style={{
+          padding: "12px",
+          background: "#f8fafc",
+          borderRadius: "8px",
+          border:
+            "1px solid #e2e8f0",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            alignItems: "center",
+            marginBottom: "8px",
+          }}
+        >
+          <small>
+            Simulated Grid
+          </small>
 
-                <div
-                  style={{
-                    padding:
-                      "12px",
-                    background:
-                      simulationResult.gridDifference >=
-                      0
-                        ? "#f0fdf4"
-                        : "#fef2f2",
-                    borderRadius:
-                      "8px",
-                  }}
-                >
-                  <small>
-                    Grid Improvement
-                  </small>
+          <strong>
+            {Number(
+              simulationResult.simulatedGrid
+            ).toFixed(2)}{" "}
+            kW
+          </strong>
+        </div>
 
-                  <strong
-                    style={{
-                      display:
-                        "block",
-                      marginTop:
-                        "5px",
-                    }}
-                  >
-                    {simulationResult.gridDifference >=
-                    0
-                      ? "↓ "
-                      : "↑ "}
-                    {Math.abs(
-                      simulationResult.gridDifference
-                    ).toFixed(2)}{" "}
-                    kW
-                  </strong>
-                </div>
-              </div>
-            )}
+        <div
+          style={{
+            width: "100%",
+            height: "12px",
+            background: "#e2e8f0",
+            borderRadius: "999px",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: `${Math.min(
+                100,
+                Math.max(
+                  0,
+                  Number(
+                    simulationResult.simulatedGrid
+                  ) * 20
+                )
+              )}%`,
+              height: "100%",
+              background: "#16a34a",
+              borderRadius: "999px",
+              transition:
+                "width 0.4s ease",
+            }}
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* IMPROVEMENT */}
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns:
+          "repeat(2, minmax(0, 1fr))",
+        gap: "10px",
+        marginTop: "10px",
+      }}
+    >
+      {/* GRID IMPROVEMENT */}
+      <div
+        style={{
+          padding: "12px",
+          background:
+            simulationResult.gridDifference >= 0
+              ? "#f0fdf4"
+              : "#fef2f2",
+          borderRadius: "8px",
+          border:
+            "1px solid #e2e8f0",
+        }}
+      >
+        <small>
+          Grid Improvement
+        </small>
+
+        <strong
+          style={{
+            display: "block",
+            marginTop: "5px",
+            fontSize: "18px",
+          }}
+        >
+          {simulationResult.gridDifference > 0
+            ? "↓ "
+            : simulationResult.gridDifference < 0
+            ? "↑ "
+            : ""}
+
+          {Math.abs(
+            Number(
+              simulationResult.gridDifference
+            )
+          ).toFixed(2)}{" "}
+          kW
+        </strong>
+      </div>
+
+      {/* IMPROVEMENT % */}
+      <div
+        style={{
+          padding: "12px",
+          background:
+            simulationResult.gridImprovementPercent >= 0
+              ? "#eff6ff"
+              : "#fef2f2",
+          borderRadius: "8px",
+          border:
+            "1px solid #e2e8f0",
+        }}
+      >
+        <small>
+          Improvement %
+        </small>
+
+        <strong
+          style={{
+            display: "block",
+            marginTop: "5px",
+            fontSize: "18px",
+          }}
+        >
+          {simulationResult.gridImprovementPercent > 0
+            ? "↓ "
+            : simulationResult.gridImprovementPercent < 0
+            ? "↑ "
+            : ""}
+
+          {Math.abs(
+            Number(
+              simulationResult.gridImprovementPercent
+            )
+          ).toFixed(1)}
+          %
+        </strong>
+      </div>
+    </div>
+  </div>
+)}
           </div>
         </section>
 

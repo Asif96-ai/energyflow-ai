@@ -87,27 +87,69 @@ export function calculateEnergySystem({
 
   let batteryPowerKW = 0;
 
-  // Battery charging from solar surplus.
-  if (
-    solarSurplusKW > 0 &&
-    safeSoC < 100
-  ) {
-    batteryPowerKW = -Math.min(
-      solarSurplusKW,
-      batteryMaxPower
-    );
-  }
+// Minimum reserve SOC.
+const minimumSoC = 10;
 
-  // Battery discharging to support load.
-  if (
-    solarDeficitKW > 0 &&
-    safeSoC > 10
-  ) {
-    batteryPowerKW = Math.min(
-      solarDeficitKW,
-      batteryMaxPower
+// Available battery energy above reserve.
+const usableBatteryEnergyKWh =
+  safeCapacity > 0
+    ? safeCapacity *
+      Math.max(
+        0,
+        (safeSoC - minimumSoC) / 100
+      )
+    : 0;
+
+// ---------------------------------------------------------
+// BATTERY CHARGING
+// Negative batteryPowerKW = charging
+// ---------------------------------------------------------
+
+if (
+  solarSurplusKW > 0 &&
+  safeSoC < 100 &&
+  safeCapacity > 0
+) {
+  const availableChargeRoomKWh =
+    safeCapacity *
+    Math.max(
+      0,
+      (100 - safeSoC) / 100
     );
-  }
+
+  const chargePowerLimitKW =
+    Math.min(
+      batteryMaxPower,
+      availableChargeRoomKWh
+    );
+
+  batteryPowerKW = -Math.min(
+    solarSurplusKW,
+    chargePowerLimitKW
+  );
+}
+
+// ---------------------------------------------------------
+// BATTERY DISCHARGING
+// Positive batteryPowerKW = discharging
+// ---------------------------------------------------------
+
+if (
+  solarDeficitKW > 0 &&
+  safeSoC > minimumSoC &&
+  safeCapacity > 0
+) {
+  const dischargePowerLimitKW =
+    Math.min(
+      batteryMaxPower,
+      usableBatteryEnergyKWh
+    );
+
+  batteryPowerKW = Math.min(
+    solarDeficitKW,
+    dischargePowerLimitKW
+  );
+}
 
   /*
    * Convention:

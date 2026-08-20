@@ -496,3 +496,287 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   ENERGYFLOW AI - RESPONSIVE MOBILE LAYOUT
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.app-wrapper {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ---------------------------------------------------------
+   TABLET
+   --------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .side-column {
+    width: 100%;
+  }
+
+  .main-column {
+    width: 100%;
+  }
+
+  .bottom-insights-container {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .app-wrapper {
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* SIDEBAR */
+
+  .sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px !important;
+    overflow-x: auto;
+  }
+
+  .sidebar-logo {
+    flex-shrink: 0;
+  }
+
+  .nav-group {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    overflow-x: auto;
+  }
+
+  .nav-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 8px !important;
+  }
+
+  .premium-card,
+  .sidebar-footer {
+    display: none !important;
+  }
+
+  /* MAIN */
+
+  .main-container {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    padding: 12px !important;
+  }
+
+  /* HEADER */
+
+  .top-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .top-header h2 {
+    font-size: 19px !important;
+  }
+
+  .header-right-tools {
+    width: 100%;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  .clock-badge {
+    font-size: 11px !important;
+  }
+
+  .user-profile-box {
+    max-width: 100%;
+  }
+
+  /* DASHBOARD */
+
+  .dashboard-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .main-column,
+  .side-column {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* KPI GRIDS */
+
+  .main-column > div[style*="repeat(4"] {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  /* TEMPERATURE */
+
+  .temp-grid {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  /* DEVICE GRID */
+
+  .devices-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  /* CHARTS */
+
+  .card {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* RIGHT COLUMN TELEMETRY */
+
+  .side-column
+    .card
+    div[style*="1fr 1fr"] {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  /* WHAT-IF CONTROLS */
+
+  section[style*="marginTop: 16px"]
+    .card
+    div[style*="1fr 1fr"] {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  /* WHAT-IF RESULTS */
+
+  section[style*="marginTop: 16px"]
+    .card
+    div[style*="repeat(2"] {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  /* AI INSIGHTS */
+
+  .insights-grid {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  /* FORMS */
+
+  .add-device-form {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  .devices-header-actions {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px;
+  }
+
+  /* TEXT */
+
+  h2,
+  h3,
+  h4,
+  h5,
+  p {
+    max-width: 100%;
+  }
+
+  /* INPUTS */
+
+  input,
+  textarea,
+  select,
+  button {
+    max-width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------
+   SMALL PHONES
+   --------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .main-container {
+    padding: 8px !important;
+  }
+
+  .sidebar {
+    padding: 8px !important;
+  }
+
+  .nav-group {
+    max-width: 55vw;
+  }
+
+  .user-profile-box p {
+    display: none;
+  }
+
+  .main-column > div[style*="repeat(4"] {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  .devices-grid {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  .header-right-tools {
+    align-items: center;
+  }
+
+  .card {
+    padding: 12px !important;
+  }
+
+  .temp-card {
+    width: 100%;
+  }
+}
