@@ -1,305 +1,501 @@
 # EnergyFlow AI
 
-## Intelligent Energy Management & Microgrid Analytics Platform
+### AI-Assisted Energy Monitoring, Simulation & Electrical Intelligence
 
-EnergyFlow AI is a web-based intelligent energy-management and
-microgrid analytics platform that combines my Electrical Engineering
-background with modern software development and local AI-driven
-energy analysis.
+EnergyFlow AI is a web-based energy intelligence platform that combines
+electrical engineering concepts, renewable-energy analysis, battery
+storage simulation, grid-dependency analysis, and AI-assisted
+recommendations in an interactive dashboard.
 
-The application simulates a smart energy system and provides
-interactive electrical monitoring, renewable-energy analysis,
-battery management, energy scenario simulation, and
-engineering-oriented recommendations.
+The project demonstrates how electrical engineering knowledge can be
+combined with modern software development and local AI-style
+decision-support logic to create an interactive energy-management
+prototype.
+
+The project focuses on the intersection of:
+
+**Electrical Engineering + Renewable Energy + Battery Storage + Software Development + AI**
 
 ## Live Demo
 
-### EnergyFlow AI
-https://energyflow-ai.vercel.app/
+**Live Application:**  
+[Open EnergyFlow AI]( https://energyflow-ai.vercel.app/)
 
-### GitHub Repository
+**GitHub Repository:**  
 https://github.com/Asif96-ai/energyflow-ai
 
-## Application Screenshots
 
-### Main Energy Dashboard
+# Project Overview
 
-![EnergyFlow AI Dashboard](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/dashboard.png)
+EnergyFlow AI simulates a small electrical energy system consisting of:
 
-The main dashboard provides an overview of electrical load,
-solar generation, battery status, grid dependency, voltage,
-current, power factor, and energy performance.
+- Electrical loads
+- Solar photovoltaic generation
+- Battery energy storage
+- Electrical grid
+- Energy consumption
+- Renewable-energy utilization
 
----
+The application allows users to:
 
-### AI Energy Advisor
+- Monitor electrical-system conditions
+- Adjust simulated energy inputs
+- Analyze solar generation
+- Monitor battery state of charge
+- Evaluate grid dependency
+- Perform What-If energy simulations
+- Receive engineering-oriented recommendations
+- Understand electrical parameters through an interactive dashboard
 
-![AI Energy Advisor](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/energy-advisor.png)
+The project was developed as a portfolio application combining
+electrical engineering with modern web development and AI-assisted
+energy analysis.
 
-The AI Energy Advisor analyzes the current energy-system
-conditions and provides engineering-oriented recommendations
-for improving energy efficiency, renewable utilization,
-battery management, power factor, and grid dependency.
+# Key Features
 
----
+## Energy Monitoring Dashboard
 
-### What-If Energy Simulator
+The main dashboard provides an overview of the simulated energy system.
 
-![What-If Energy Simulator](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/what-if.png)
+It displays:
 
-The What-If Energy Simulator allows users to test alternative
-solar-generation and battery scenarios without changing the
-live energy system.
-
----
-
-### AI Copilot
-
-![AI Copilot](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/ai-copilot.png)
-
-The local AI Copilot provides system analysis based on current
-energy conditions and allows users to ask questions about
-grid import, solar generation, battery status, energy cost,
-and power factor.
-
-
-# Core Features
-
-## Real-Time Energy Dashboard
-
-The dashboard provides analysis and visualization of:
-
-- Electrical load
-- Active power
+- Active Power
 - Voltage
 - Current
-- Power factor
-- Solar generation
-- Battery state of charge
-- Grid import
-- Grid dependency
-- Renewable-energy utilization
-- Energy efficiency
-- Estimated CO₂ impact
+- Power Factor
+- Solar Generation
+- Battery State of Charge
+- Grid Import
+- Grid Export
+- Solar Coverage
+- Solar Surplus
+- Solar Deficit
+- Renewable Utilization
+- Estimated Energy Cost
+- Estimated CO₂ Impact
+- Overall System Status
 
+The values are calculated dynamically from the selected electrical
+loads, solar generation, battery state, and configured electrical
+parameters.
 
-# Local AI Energy Intelligence
+# Understanding the Energy Values
 
-EnergyFlow AI contains a local energy-intelligence engine
-that evaluates the simulated electrical system and generates
-engineering-oriented recommendations.
+EnergyFlow AI is designed so that users can understand what each
+dashboard value represents rather than simply seeing unexplained
+numbers.
 
-The intelligence layer can identify conditions related to:
+## Active Power
 
-- High electrical demand
-- Grid dependency
-- Solar utilization
-- Battery condition
-- Power factor
-- Energy efficiency
-- Load management
+Active Power represents the electrical power currently consumed by
+the selected active devices.
 
-The current implementation does not require a paid external
-LLM API.
+It is displayed in watts (W) and internally converted to kilowatts (kW).
 
-This allows the application to run locally without external
-AI API costs.
+##Battery State of Charge (SoC)
+Battery SoC = Stored Energy Availability
+Battery State of Charge (SoC) represents the percentage of available
+battery energy currently stored in the battery.
+0% SoC   = 0 kWh
+25% SoC  = 5 kWh
+50% SoC  = 10 kWh
+75% SoC  = 15 kWh
+100% SoC = 20 kWh
+Battery Maximum Power = 5 kW
+This limits the battery's instantaneous charging or discharging power.
+This means the battery can contain a certain amount of stored energy
+while its instantaneous charge/discharge power is still limited.
+
+## Solar Generation
+
+Solar Generation represents the simulated photovoltaic (PV) power
+available to the energy system.
+It is measured in: kW
+The solar generation value is compared with the electrical load to
+determine solar coverage, surplus, deficit, and grid dependency.
+##Solar Coverage
+Solar Coverage represents how much of the current electrical load can
+be covered by available solar generation.
+
+## Solar Surplus
+
+Solar Surplus occurs when: Solar Generation > Electrical Load
+The surplus represents renewable generation that exceeds the immediate
+electrical load.
+Depending on system conditions, this energy may be available for:
+•	Battery charging 
+•	Flexible loads 
+•	Grid export
+
+## Solar Deficit
+
+Solar Deficit occurs when: Electrical Load > Solar Generation
+The remaining demand must then be supported by battery discharge and/or
+grid import depending on the simulated battery condition.
+
+## Grid Import
+
+Grid Import represents electrical power supplied by the electrical
+grid when the local solar and battery resources are not sufficient to
+meet the current load.
+The simplified relationship used by the model is:
+
+Grid Import = Load - Solar Generation - Battery Discharge
+
+## Grid Export
+
+Grid Export represents excess available energy when local generation
+and battery contribution exceed the current electrical load.
+Conceptually: Solar + Battery Contribution > Load
+
+## Voltage
+
+The EnergyFlow AI model uses:
+Voltage = 230 V
+This nominal voltage is used in the electrical calculations for
+estimating current and other AC electrical quantities.
+
+## Current
+
+EnergyFlow AI estimates electrical current using: I = P / (V × PF)
+
+## Power Factor
+
+The current model uses: Power Factor = 0.94
+Power factor is used in the model to calculate electrical quantities
+such as:
+•	Current 
+•	Apparent Power 
+•	Reactive Power 
+A lower power factor results in higher apparent current for the same
+active power.
+
+## Apparent Power
+
+Apparent Power is calculated using: S = P / PF
+This allows the system to distinguish between active power and the
+total apparent electrical demand.
+
+## Reactive Power
+
+EnergyFlow AI calculates reactive power from apparent power and active
+power.
+Conceptually: Reactive Power = √(Apparent Power² - Active Power²) (VAR)
+This allows the application to incorporate fundamental AC electrical
+engineering concepts into the energy-monitoring model.
+
+## Renewable Utilization
+
+Renewable Utilization represents the proportion of available solar
+generation that is directly used by the electrical load.
+
+## Energy Cost
+
+EnergyFlow AI uses the following configured electricity price: Electricity Price = €0.32 / kWh
+The application estimates the hourly cost associated with grid import.
+
+## Estimated CO₂ Impact
+
+The current model uses:
+Grid Emission Factor = 0.4 kg CO₂/kWh
+This value is used to estimate emissions associated with grid import.
+The value is an estimate based on the configured emission factor and
+should not be interpreted as a real-time measurement of the local
+electricity grid's actual carbon intensity.
+
+## Grid Dependency
+
+Grid dependency represents how much electrical power the system still
+requires from the external electrical grid after considering local
+solar generation and battery support.
+
+## What-If Energy Simulator
+
+The What-If Energy Simulator is designed to answer questions such as:
+•	What would happen to grid dependency if solar generation increased?
+or
+•	What would happen if more battery energy were available?
+
+# AI Energy Intelligence
+
+EnergyFlow AI includes a local decision-support layer that evaluates
+energy-system conditions and generates engineering-oriented
+recommendations.
+The recommendation logic considers factors including:
+•	Electrical load 
+•	Solar generation 
+•	Battery SoC 
+•	Grid dependency 
+•	Solar surplus 
+•	Solar deficit 
+•	Renewable utilization 
+•	Power factor 
+•	Estimated energy cost 
+•	Estimated CO₂ impact 
+•	The goal is to convert numerical energy-system conditions into
+understandable engineering recommendations.
 
 # AI Energy Advisor
 
-The Energy Advisor converts energy-system measurements into
-easy-to-understand operational insights.
+The AI Energy Advisor analyzes the current simulated energy-system
+conditions and provides recommendations related to:
+•	Energy efficiency 
+•	Renewable-energy utilization 
+•	Battery management 
+•	Grid dependency 
+•	Solar surplus 
+•	Solar deficit 
+•	Power factor 
+•	Energy cost 
+•	CO₂ impact 
+The system is designed as a local, explainable decision-support
+feature and does not require a paid external LLM API for its core
+functionality.
 
-It evaluates:
+# AI Copilot
 
-- Grid import
-- Grid dependency
-- Solar utilization
-- Battery status
-- Power factor
-- Energy efficiency
+The AI Copilot provides an interactive interface for understanding
+the current energy-system state.
+It can help interpret questions related to:
+•	Current electrical demand 
+•	Solar generation 
+•	Battery availability 
+•	Grid dependency 
+•	Renewable utilization 
+•	Energy efficiency 
+•	Power factor 
+•	Simulation results 
+The objective is to make the energy-system calculations easier to
+understand while maintaining an engineering-oriented approach.
 
-The system then generates prioritized recommendations
-for improving energy-system operation.
+# Application Screenshots
 
+## Main Energy Dashboard
 
-# What-If Energy Simulator
+![EnergyFlow AI Dashboard](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/dashboard.png)
+The main dashboard provides an overview of electrical load, solar
+generation, battery state of charge, grid dependency, voltage,
+current, power factor, and overall energy performance.
 
-The What-If Energy Simulator allows users to test alternative
-energy-system configurations without changing the live system.
+## What-If Energy Simulator
 
-Users can simulate changes in:
+![What-If Energy Simulator](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/what-if.png)
+The What-If Energy Simulator allows users to test hypothetical solar
+and battery scenarios without changing the current operating state.
+The simulator compares the current system against a hypothetical
+system and reports grid impact, grid reduction, and percentage
+improvement.
 
-- Solar generation
-- Battery state of charge
-- Electrical demand
+## AI Energy Advisor
 
-The simulator compares the current and simulated system
-conditions and calculates:
+![AI Energy Advisor](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/energy-advisor.png)
+The AI Energy Advisor analyzes the current energy-system conditions
+and provides engineering-oriented recommendations for improving
+energy efficiency, renewable utilization, battery management,
+power factor, and grid dependency.
 
-- Current grid demand
-- Simulated grid demand
-- Grid improvement
-- Percentage improvement
-- Estimated cost difference
+## AI Copilot
 
-This provides a simple decision-support mechanism for
-evaluating energy-management strategies.
-
-
-# Battery Energy Management
-
-The platform models battery energy storage using:
-
-- Battery state of charge
-- Battery capacity
-- Battery power limits
-- Solar generation
-- Electrical demand
-- Grid interaction
-
-The battery model is integrated into the central energy-system
-calculation used by the dashboard and simulation engine.
-
-
-# Solar & Renewable Energy
-
-EnergyFlow AI models solar generation and its relationship
-with electrical demand.
-
-The platform can analyze:
-
-- Solar generation
-- Solar surplus
-- Solar deficit
-- Renewable utilization
-- Grid dependency
-- Battery charging opportunities
-
-
-# Smart Appliance Management
-
-The application includes interactive simulated electrical loads.
-
-Users can:
-
-- Turn appliances ON/OFF
-- Add appliances
-- Remove appliances
-- Define appliance power
-- Observe the effect of loads on the energy system
-
-This allows the user to explore how flexible electrical
-loads influence overall energy demand.
-
-
-# Energy Analytics
-
-EnergyFlow AI calculates and visualizes electrical and
-energy-management metrics including:
-
-- Total load
-- Grid import
-- Grid export
-- Solar generation
-- Battery state
-- Power factor
-- Current
-- Voltage
-- Estimated energy cost
-- Renewable utilization
-- CO₂ impact
-
-# Technology Stack
-Frontend
-    React
-    JavaScript
-    Vite
-    HTML5
-    CSS3
-Data Visualization
-    Recharts
-Icons & UI
-    Lucide React
-Development
-    Visual Studio Code
-    Git
-    GitHub
-Deployment
-    Vercel
+![AI Copilot](https://raw.githubusercontent.com/Asif96-ai/energyflow-ai/main/docs/ai-copilot.png)
+The AI Copilot provides an interactive interface for interpreting
+energy-system conditions and understanding the effect of different
+energy scenarios.
 
 # Electrical Engineering Concepts
 
-The project applies concepts from:
-    Electrical power systems
-    Energy management
-    Renewable energy
-    Solar photovoltaic generation
-    Battery energy storage
-    Electrical load analysis
-    Voltage monitoring
-    Current monitoring
-    Power factor
-    Grid dependency
-    Energy efficiency
-    CO₂ estimation
-    Smart-grid concepts
+The project incorporates practical electrical engineering concepts
+including:
+•	Active power 
+•	Apparent power 
+•	Reactive power 
+•	Power factor 
+•	AC current estimation 
+•	Nominal voltage 
+•	Photovoltaic generation 
+•	Solar surplus and deficit 
+•	Battery state of charge 
+•	Battery charge/discharge power limits 
+•	Grid import and export 
+•	Renewable-energy utilization 
+•	Grid dependency 
+•	Energy cost estimation 
+•	Grid-related CO₂ estimation 
+This allows EnergyFlow AI to demonstrate the combination of
+electrical engineering knowledge with software engineering and
+AI-assisted energy analysis.
 
-This project demonstrates how electrical-system measurements
-can be processed by software and converted into interactive
-analytics and engineering-oriented recommendations.
+# Technology Stack
+
+## Frontend
+
+•	React 
+•	Vite 
+•	JavaScript 
+•	HTML5 
+•	CSS 
+
+## Energy Simulation
+
+•	JavaScript-based local energy simulation engine 
+•	Electrical power calculations 
+•	Solar-energy calculations 
+•	Battery-storage modelling 
+•	Grid import/export calculations 
+•	Energy cost estimation 
+•	CO₂ estimation 
+
+## AI / Decision Support
+
+•	Local rule-based energy intelligence 
+•	AI Energy Advisor 
+•	AI Copilot 
+•	Scenario-based recommendations 
+•	No paid external LLM API required for the core system 
+
+## Development & Deployment
+
+•	Visual Studio Code 
+•	Git 
+•	GitHub 
+•	Vercel
+# Design Goals
+
+## 1. Engineering Accuracy
+
+The application incorporates fundamental electrical engineering
+relationships instead of treating energy as a generic numerical
+dataset.
+
+## 2. Explainability
+
+Simulation results are presented with numerical comparisons,
+formulas, examples, and engineering-oriented explanations.
+
+## 3. Accessibility
+
+Complex energy-system concepts are presented through an interactive
+dashboard rather than requiring users to inspect raw calculations.
+
+## 4. Local AI Decision Support
+
+The core energy-analysis and recommendation features operate locally
+without requiring a paid external LLM API.
+
+## 5. Practical Software Development
+
+The project demonstrates:
+•	Component-based React development 
+•	Interactive user interfaces 
+•	State management 
+•	Energy-system simulation 
+•	Electrical calculations 
+•	Scenario analysis 
+•	Data visualization 
+•	Git/GitHub workflow 
+•	Production deployment with Vercel
+
+# Limitations
+
+EnergyFlow AI is currently a simulation and portfolio project rather
+than a certified energy-management, protection, or grid-control system.
+The application uses configurable assumptions for parameters such as:
+•	Nominal voltage 
+•	Power factor 
+•	Battery capacity 
+•	Battery power limit 
+•	Electricity price 
+•	Grid emission factor 
+The calculated values should therefore be interpreted as simulation
+results rather than measurements from certified electrical equipment.
+For real-world deployment, the system would require:
+•	Validated sensor data 
+•	Smart-meter or IoT integration 
+•	More detailed electrical-system models 
+•	Secure data handling 
+•	Hardware integration 
+•	Domain-specific validation 
+•	Appropriate safety and grid-compliance considerations
 
 # Future Development
 
-Potential future extensions include:
+## Potential future extensions include:
 
-IoT Integration
-Real electrical sensors
-Smart-meter integration
-MQTT telemetry
-Real-time energy measurements
-IoT device communication
-Artificial Intelligence
-Machine-learning load forecasting
-Solar-generation forecasting
-Predictive energy optimization
-Battery charging optimization
-Demand-response optimization
-Anomaly detection
-LLM Integration
+•	Real-time smart-meter integration 
+•	IoT energy-meter connectivity 
+•	Historical energy-data storage 
+•	Time-series energy forecasting 
+•	Photovoltaic production forecasting 
+•	Weather-aware renewable-energy forecasting 
+•	Battery charge/discharge optimization 
+•	Dynamic electricity-price integration 
+•	Advanced energy anomaly detection 
+•	Energy consumption forecasting 
+•	Backend-based analytics 
+•	User accounts and persistent energy data 
+•	Real-time monitoring of distributed energy resources 
+•	Optional integration with external LLM services
 
-A future version could integrate an external LLM to provide
-natural-language interaction with the energy system.
+# Installation
 
-Advanced Energy Management
-    Dynamic electricity pricing
-    Time-of-use optimization
-    Battery dispatch optimization
-    Smart-home automation
-    Renewable-energy forecasting
-    Grid-interactive energy management
-# Author
-Muhammad Asif
+Clone the repository:
+git clone https://github.com/Asif96-ai/energyflow-ai.git
+Navigate into the project:
+•	cd energyflow-ai
+Install dependencies:
+•	npm install
+Start the development server:
+•	npm run dev
+The application can then be opened using the local development URL
+provided by Vite.
 
-Electrical Engineer | MSc Communication and Information Technology
+# Production Build
 
-University of Bremen, Germany
+To create a production build:
+•	npm run build
+The production application is deployed through Vercel.
 
-Areas of Interest
-Artificial Intelligence
-Energy Technology
-Smart Grids
-Renewable Energy
-Energy Management
-Internet of Things
-Industrial Digitalization
-Intelligent Software Systems
-Data Analytics
-Automation
-Background
+# Development Workflow
 
-Electrical Engineering + Communication & Information Technology
+The project uses Git and GitHub for version control.
+Typical workflow:
+•	git status
+•	git add .
+•	git commit -m "Update EnergyFlow AI"
+•	git push origin main
 
-The EnergyFlow AI project reflects this combination by applying
-software and AI concepts to an electrical-energy management
-problem.
+The main branch represents the current portfolio-ready version of
+the project.
+
+## Author
+
+# Muhammad Asif
+# Electrical Engineer | Energy Systems | AI & Software Development
+
+EnergyFlow AI was developed as a portfolio project combining
+electrical engineering knowledge with modern web development,
+renewable-energy simulation, battery-storage modelling, and
+AI-assisted energy intelligence.
+The project demonstrates practical application of:
+•	Electrical power engineering 
+•	Renewable-energy systems 
+•	Battery energy storage 
+•	Energy-system simulation 
+•	Electrical calculations 
+•	Scenario analysis 
+•	React development 
+•	JavaScript 
+•	Interactive dashboards 
+•	AI-assisted decision support 
+•	Git/GitHub development workflow 
+•	Cloud deployment 
+
+GitHub
+https://github.com/Asif96-ai
+Project Repository
+https://github.com/Asif96-ai/energyflow-ai
+
+# License
+
+EnergyFlow AI is released under the MIT License.
+Copyright (c) 2026 Muhammad Asif
+See the ( https://github.com/Asif96-ai/energyflow-ai/blob/main/LICENSE) file for the complete license terms.

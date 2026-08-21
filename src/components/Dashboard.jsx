@@ -1830,232 +1830,452 @@ const runSimulation = () => {
               Run Energy Simulation
             </button>
 
-            {simulationResult && (
-  <div
-    style={{
-      marginTop: "15px",
-    }}
-  >
-    {/* GRID COMPARISON */}
+           {simulationResult && (
+  <div style={{ marginTop: "18px" }}>
+
+    {/* =====================================================
+        SIMULATION RESULT CARDS
+    ===================================================== */}
+
     <div
       style={{
         display: "grid",
         gridTemplateColumns:
-          "repeat(2, minmax(0, 1fr))",
+          "repeat(auto-fit, minmax(150px, 1fr))",
         gap: "10px",
       }}
     >
+
       {/* CURRENT GRID */}
+
       <div
         style={{
-          padding: "12px",
+          padding: "14px",
           background: "#f8fafc",
-          borderRadius: "8px",
-          border:
-            "1px solid #e2e8f0",
+          borderRadius: "10px",
+          border: "1px solid #e2e8f0",
         }}
       >
-        <div
+        <small
           style={{
-            display: "flex",
-            justifyContent:
-              "space-between",
-            alignItems: "center",
-            marginBottom: "8px",
+            color: "#64748b",
+            fontWeight: "600",
           }}
         >
-          <small>
-            Current Grid
-          </small>
+          Current Grid
+        </small>
 
-          <strong>
-            {Number(
-              simulationResult.currentGrid
-            ).toFixed(2)}{" "}
-            kW
-          </strong>
-        </div>
-
-        <div
+        <strong
           style={{
-            width: "100%",
-            height: "12px",
-            background: "#e2e8f0",
-            borderRadius: "999px",
-            overflow: "hidden",
+            display: "block",
+            marginTop: "6px",
+            fontSize: "20px",
           }}
         >
-          <div
-            style={{
-              width: `${Math.min(
-                100,
-                Math.max(
-                  0,
-                  Number(
-                    simulationResult.currentGrid
-                  ) * 20
-                )
-              )}%`,
-              height: "100%",
-              background: "#64748b",
-              borderRadius: "999px",
-              transition:
-                "width 0.4s ease",
-            }}
-          />
-        </div>
+          {simulationResult.currentGrid.toFixed(2)} kW
+        </strong>
+
+        <small
+          style={{
+            color: "#64748b",
+          }}
+        >
+          Current grid import
+        </small>
       </div>
+
 
       {/* SIMULATED GRID */}
+
       <div
         style={{
-          padding: "12px",
+          padding: "14px",
           background: "#f8fafc",
-          borderRadius: "8px",
-          border:
-            "1px solid #e2e8f0",
+          borderRadius: "10px",
+          border: "1px solid #e2e8f0",
         }}
       >
-        <div
+        <small
           style={{
-            display: "flex",
-            justifyContent:
-              "space-between",
-            alignItems: "center",
-            marginBottom: "8px",
+            color: "#64748b",
+            fontWeight: "600",
           }}
         >
-          <small>
-            Simulated Grid
-          </small>
+          Simulated Grid
+        </small>
 
-          <strong>
-            {Number(
-              simulationResult.simulatedGrid
-            ).toFixed(2)}{" "}
-            kW
-          </strong>
-        </div>
-
-        <div
+        <strong
           style={{
-            width: "100%",
-            height: "12px",
-            background: "#e2e8f0",
-            borderRadius: "999px",
-            overflow: "hidden",
+            display: "block",
+            marginTop: "6px",
+            fontSize: "20px",
           }}
         >
-          <div
-            style={{
-              width: `${Math.min(
-                100,
-                Math.max(
-                  0,
-                  Number(
-                    simulationResult.simulatedGrid
-                  ) * 20
-                )
-              )}%`,
-              height: "100%",
-              background: "#16a34a",
-              borderRadius: "999px",
-              transition:
-                "width 0.4s ease",
-            }}
-          />
-        </div>
+          {simulationResult.simulatedGrid.toFixed(2)} kW
+        </strong>
+
+        <small
+          style={{
+            color: "#64748b",
+          }}
+        >
+          Grid import after scenario
+        </small>
       </div>
-    </div>
 
-    {/* IMPROVEMENT */}
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns:
-          "repeat(2, minmax(0, 1fr))",
-        gap: "10px",
-        marginTop: "10px",
-      }}
-    >
-      {/* GRID IMPROVEMENT */}
+
+      {/* GRID REDUCTION */}
+
       <div
         style={{
-          padding: "12px",
+          padding: "14px",
           background:
             simulationResult.gridDifference >= 0
               ? "#f0fdf4"
               : "#fef2f2",
-          borderRadius: "8px",
+          borderRadius: "10px",
           border:
-            "1px solid #e2e8f0",
+            simulationResult.gridDifference >= 0
+              ? "1px solid #bbf7d0"
+              : "1px solid #fecaca",
         }}
       >
-        <small>
-          Grid Improvement
+        <small
+          style={{
+            color: "#64748b",
+            fontWeight: "600",
+          }}
+        >
+          Grid Reduction
         </small>
 
         <strong
           style={{
             display: "block",
-            marginTop: "5px",
-            fontSize: "18px",
+            marginTop: "6px",
+            fontSize: "20px",
           }}
         >
-          {simulationResult.gridDifference > 0
+          {simulationResult.gridDifference >= 0
             ? "↓ "
-            : simulationResult.gridDifference < 0
-            ? "↑ "
-            : ""}
+            : "↑ "}
 
           {Math.abs(
-            Number(
-              simulationResult.gridDifference
-            )
+            simulationResult.gridDifference
           ).toFixed(2)}{" "}
           kW
         </strong>
+
+        <small
+          style={{
+            color: "#64748b",
+          }}
+        >
+          Change in grid import
+        </small>
       </div>
 
-      {/* IMPROVEMENT % */}
+
+      {/* IMPROVEMENT */}
+
       <div
         style={{
-          padding: "12px",
+          padding: "14px",
           background:
             simulationResult.gridImprovementPercent >= 0
-              ? "#eff6ff"
+              ? "#f0fdf4"
               : "#fef2f2",
-          borderRadius: "8px",
+          borderRadius: "10px",
           border:
-            "1px solid #e2e8f0",
+            simulationResult.gridImprovementPercent >= 0
+              ? "1px solid #bbf7d0"
+              : "1px solid #fecaca",
         }}
       >
-        <small>
-          Improvement %
+        <small
+          style={{
+            color: "#64748b",
+            fontWeight: "600",
+          }}
+        >
+          Grid Import Reduction
         </small>
 
         <strong
           style={{
             display: "block",
-            marginTop: "5px",
-            fontSize: "18px",
+            marginTop: "6px",
+            fontSize: "20px",
           }}
         >
-          {simulationResult.gridImprovementPercent > 0
+          {simulationResult.gridImprovementPercent >= 0
             ? "↓ "
-            : simulationResult.gridImprovementPercent < 0
-            ? "↑ "
-            : ""}
+            : "↑ "}
 
           {Math.abs(
-            Number(
-              simulationResult.gridImprovementPercent
-            )
-          ).toFixed(1)}
-          %
+            simulationResult.gridImprovementPercent
+          ).toFixed(1)}%
         </strong>
+
+        <small
+          style={{
+            color: "#64748b",
+          }}
+        >
+          Relative change in grid dependency
+        </small>
+      </div>
+
+    </div>
+
+
+    {/* =====================================================
+        SCENARIO COMPARISON
+    ===================================================== */}
+
+    <div
+      style={{
+        marginTop: "15px",
+        padding: "16px",
+        background: "#ffffff",
+        borderRadius: "10px",
+        border: "1px solid #e2e8f0",
+      }}
+    >
+
+      <h4
+        style={{
+          margin: "0 0 12px 0",
+          fontSize: "15px",
+        }}
+      >
+        What-If Scenario Comparison
+      </h4>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "1.2fr 1fr 1fr 1fr",
+          gap: "8px",
+          fontSize: "13px",
+        }}
+      >
+
+        {/* HEADER */}
+
+        <strong>Parameter</strong>
+        <strong>Current</strong>
+        <strong>Simulated</strong>
+        <strong>Change</strong>
+
+
+        {/* SOLAR */}
+
+        <span>Solar Generation</span>
+
+        <span>
+          {simulationResult.currentSolar.toFixed(2)} kW
+        </span>
+
+        <span>
+          {simulationResult.simulatedSolar.toFixed(2)} kW
+        </span>
+
+        <span>
+          {(
+            simulationResult.simulatedSolar -
+            simulationResult.currentSolar
+          ).toFixed(2)}{" "}
+          kW
+        </span>
+
+
+        {/* BATTERY */}
+
+        <span>Battery SoC</span>
+
+        <span>
+          {simulationResult.currentBattery.toFixed(0)}%
+        </span>
+
+        <span>
+          {simulationResult.simulatedBattery.toFixed(0)}%
+        </span>
+
+        <span>
+          {(
+            simulationResult.simulatedBattery -
+            simulationResult.currentBattery
+          ).toFixed(0)}{" "}
+          pts
+        </span>
+
+
+        {/* GRID */}
+
+        <span>Grid Import</span>
+
+        <span>
+          {simulationResult.currentGrid.toFixed(2)} kW
+        </span>
+
+        <span>
+          {simulationResult.simulatedGrid.toFixed(2)} kW
+        </span>
+
+        <span>
+          {simulationResult.gridDifference >= 0
+            ? "-"
+            : "+"}
+          {Math.abs(
+            simulationResult.gridDifference
+          ).toFixed(2)}{" "}
+          kW
+        </span>
+
       </div>
     </div>
+
+
+    {/* =====================================================
+        ENGINEERING INTERPRETATION
+    ===================================================== */}
+
+    <div
+      style={{
+        marginTop: "15px",
+        padding: "16px",
+        background: "#f8fafc",
+        borderRadius: "10px",
+        border: "1px solid #e2e8f0",
+      }}
+    >
+
+      <h4
+        style={{
+          margin: "0 0 8px 0",
+          fontSize: "15px",
+        }}
+      >
+        Energy Impact
+      </h4>
+
+      <p
+        style={{
+          margin: 0,
+          lineHeight: 1.6,
+          color: "#475569",
+          fontSize: "13px",
+        }}
+      >
+
+        {simulationResult.gridDifference > 0 ? (
+          <>
+            The simulated scenario reduces grid import by{" "}
+            <strong>
+              {simulationResult.gridDifference.toFixed(2)} kW
+            </strong>
+            , corresponding to a{" "}
+            <strong>
+              {simulationResult.gridImprovementPercent.toFixed(1)}%
+            </strong>{" "}
+            reduction in grid dependency under the selected
+            load conditions.
+          </>
+        ) : simulationResult.gridDifference < 0 ? (
+          <>
+            The simulated scenario increases grid import by{" "}
+            <strong>
+              {Math.abs(
+                simulationResult.gridDifference
+              ).toFixed(2)} kW
+            </strong>
+            . The selected scenario therefore increases
+            grid dependency compared with the current system.
+          </>
+        ) : (
+          <>
+            The simulated scenario produces the same grid
+            import as the current operating condition.
+            No grid-import improvement was detected.
+          </>
+        )}
+
+      </p>
+
+    </div>
+
+
+    {/* =====================================================
+        SCENARIO DETAILS
+    ===================================================== */}
+
+    <div
+      style={{
+        marginTop: "12px",
+        padding: "14px",
+        background: "#f8fafc",
+        borderRadius: "10px",
+      }}
+    >
+
+      <small
+        style={{
+          display: "block",
+          fontWeight: "600",
+          marginBottom: "6px",
+        }}
+      >
+        Scenario Details
+      </small>
+
+      <div
+        style={{
+          fontSize: "12px",
+          color: "#64748b",
+          lineHeight: 1.7,
+        }}
+      >
+
+        Solar generation changes from{" "}
+        <strong>
+          {simulationResult.currentSolar.toFixed(2)} kW
+        </strong>{" "}
+        to{" "}
+        <strong>
+          {simulationResult.simulatedSolar.toFixed(2)} kW
+        </strong>
+        .
+
+        <br />
+
+        Battery state of charge changes from{" "}
+        <strong>
+          {simulationResult.currentBattery.toFixed(0)}%
+        </strong>{" "}
+        to{" "}
+        <strong>
+          {simulationResult.simulatedBattery.toFixed(0)}%
+        </strong>
+        .
+
+        <br />
+
+        Grid import changes from{" "}
+        <strong>
+          {simulationResult.currentGrid.toFixed(2)} kW
+        </strong>{" "}
+        to{" "}
+        <strong>
+          {simulationResult.simulatedGrid.toFixed(2)} kW
+        </strong>
+        .
+
+      </div>
+
+    </div>
+
   </div>
 )}
           </div>
